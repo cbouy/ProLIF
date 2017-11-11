@@ -1,6 +1,10 @@
 # ProLIF
 Protein-Ligand Interaction Fingerprints
 
+
+## License
+
+Unless otherwise noted, all files in this directory and all subdirectories are distributed under the Apache License, Version 2.0:
 ```
    Copyright 2017 Cédric BOUYSSET
 
