@@ -1,10 +1,12 @@
 # ProLIF
 Protein-Ligand Interaction Fingerprints
 
-## Description
+## :small_blue_diamond: Description
+
 ProLIF is a tool designed to generate Interaction FingerPrints (IFP) and compute similarity scores for protein-ligand interactions, given a reference ligand and a list of binding-site residues.
 
-## Installation
+## :small_blue_diamond: Installation
+
 ProLIF is written in Python 3, and uses the following non-standard libraries:
 * [rdkit](http://www.rdkit.org/docs/Install.html)
 
@@ -17,7 +19,7 @@ For Linux users, you can also make an alias for ease of use: add the following l
 alias prolif="python path/to/prolif.py"
 ```
 
-## Usage
+## :small_blue_diamond: Usage
 
 ```
 python prolif.py --help
@@ -72,7 +74,7 @@ Mandatory arguments: --reference --ligand --protein --residues
 1 single molecule per file.
 ```
 
-## License
+## :small_blue_diamond: License
 
 Unless otherwise noted, all files in this directory and all subdirectories are distributed under the Apache License, Version 2.0:
 ```
