@@ -112,29 +112,20 @@ Let 'a' and 'b' be the number of bits activated in molecules A and B,
 	for residue in protein.residues:
 		print('{: >8s}'.format(protein.residues[residue].resName), end='')
 	print()
-	# Calculate bitstrings for each residue with reference
-	for residue in protein.residues:
-		protein.residues[residue].generateBitstring(reference)
-	# Generate IFP with reference and store
-	protein.generateIFP()
-	referenceIFP = protein.IFP
-	referenceIFPvector = protein.IFPvector
-	print(referenceIFP)
+	# Generate the IFP between the reference ligand and the protein
+	reference.generateIFP(protein)
+	print(reference.IFP)
 	# Loop over ligands:
-	ligandsIFP = []
+	ligandList = []
 	for lig in args.ligand:
 		ligand = Ligand(lig)
-		# Calculate bitstrings for each residue with ligand
-		for residue in protein.residues:
-			protein.residues[residue].generateBitstring(ligand)
-		# Generate IFP with ligand and store
-		protein.generateIFP()
-		IFP = protein.IFP
-		IFPvector = protein.IFPvector
+		# Generate the IFP between a ligand and the protein
+		ligand.generateIFP(protein)
 		# Calculate similarity
-		S = calculateSimilarity(referenceIFPvector, IFPvector, args.similarity)
-		ligandsIFP.append([lig, S, IFP])
-		print(IFP, '{:.4f}'.format(S))
+		S = calculateSimilarity(reference.IFPvector, ligand.IFPvector, args.similarity)
+		ligand.setSimilarity(S)
+		print(ligand.IFP, '{:.4f}'.format(ligand.S))
+		ligandList.append(ligand)
 	# Output
 	if args.output:
 		with open(args.output, 'w') as file:
@@ -142,8 +133,8 @@ Let 'a' and 'b' be the number of bits activated in molecules A and B,
 			for residue in protein.residues:
 				file.write(',{}'.format(protein.residues[residue].resName))
 			file.write('\n')
-			CSIFP = ','.join(referenceIFP[i:i+8] for i in range(0, len(referenceIFP), 8))
-			file.write('{},1.0000,{}\n'.format(args.reference,CSIFP))
-			for ligandName,S,IFP in ligandsIFP:
-				CSIFP = ','.join(IFP[i:i+8] for i in range(0, len(IFP), 8))
-				file.write('{},{:.4f},{}\n'.format(ligandName,S,CSIFP))
+			CSIFP = ','.join(reference.IFP[i:i+8] for i in range(0, len(reference.IFP), 8))
+			file.write('{},1.0000,{}\n'.format(args.reference, CSIFP))
+			for ligand in ligandList:
+				CSIFP = ','.join(ligand.IFP[i:i+8] for i in range(0, len(ligand.IFP), 8))
+				file.write('{},{:.4f},{}\n'.format(ligand.file, ligand.S, CSIFP))

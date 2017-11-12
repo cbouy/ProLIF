@@ -14,7 +14,7 @@
    limitations under the License.
 """
 
-from rdkit import Chem, DataStructs
+from rdkit import Chem
 import os.path
 from src.residue import *
 
@@ -58,14 +58,3 @@ class Protein:
 		self.residues = {}
 		for residue in residuesDict:
 			self.residues[residue] = Residue(residuesDict[residue])
-			
-	def generateIFP(self):
-		"""Generates the complete IFP from each residue's bitstring"""
-		self.IFPvector = DataStructs.ExplicitBitVect(8*len(self.residues))
-		i=0
-		for residue in self.residues:
-			for value in self.residues[residue].bitstring:
-				if value == '1':
-					self.IFPvector.SetBit(i)
-				i+=1
-		self.IFP = ''.join([self.residues[residue].bitstring for residue in self.residues])
