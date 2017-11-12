@@ -95,6 +95,5 @@ Unless otherwise noted, all files in this directory and all subdirectories are d
 
 ### TODO
 
-- [ ] Put the IFP related methods in Ligand instead of Residue and Protein, and modify the main code accordingly
 - [ ] Run with multithreading
 - [ ] Evaluate the interactions (instead of returning randomly 0 or 1...)
