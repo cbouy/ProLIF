@@ -26,8 +26,43 @@ class Residue:
 		self.mol = Chem.MolFromPDBBlock(block, sanitize=True, removeHs=True)
 		# Retrieve information from PDB file and use it to set the residue name for the output
 		pdbInfo = self.mol.GetAtoms()[0].GetPDBResidueInfo()
-		self.setResName('{}{}'.format(pdbInfo.GetResidueName(),pdbInfo.GetResidueNumber()))
+		self.aminoAcid = pdbInfo.GetResidueName()
+		self.setResName('{}{}'.format(self.aminoAcid,pdbInfo.GetResidueNumber()))
+		self.setProfile()
 	
 	def setResName(self, residueName):
 		"""Set the name of the residue"""
 		self.resName = residueName
+
+	def setProfile(self):
+		"""Set the profile of a residue based on the amino-acid"""
+		# Hydrophobic
+		if self.aminoAcid in ['ILE', 'VAL', 'LEU', 'PHE', 'MET', 'ALA', 'GLY', 'PRO', 'TRP', 'TYR']:
+			self.isHydrophobic = True
+		else:
+			self.isHydrophobic = False
+		# Aromatic
+		if self.aminoAcid in ['PHE', 'TRP', 'TYR', 'HIS']:
+			self.isAromatic = True
+		else:
+			self.isAromatic = False
+		# HB and XB acceptor
+		if self.aminoAcid in ['TYR', 'SER', 'THR', 'ASN', 'GLN', 'CYS']:
+			self.isHBa = True
+		else:
+			self.isHBa = False
+		# HB donor
+		if self.aminoAcid in ['TYR', 'SER', 'THR', 'ASN', 'GLN', 'TRP', 'ARG']:
+			self.isHBd = True
+		else:
+			self.isHBd = False
+		# Anionic
+		if self.aminoAcid in ['ASP', 'GLU']:
+			self.isAnionic = True
+		else:
+			self.isAnionic = False
+		# Cationic
+		if self.aminoAcid in ['ARG', 'HIS', 'LYS']:
+			self.isCationic = True
+		else:
+			self.isCationic = False

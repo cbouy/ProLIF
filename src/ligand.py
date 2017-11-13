@@ -15,7 +15,6 @@
 """
 
 from rdkit import Chem, DataStructs
-import random
 import os.path
 
 class Ligand:
@@ -36,39 +35,63 @@ class Ligand:
 	def hasHydrophobic(self, residue):
 		"""Get the presence or absence of an hydrophobic interaction between 
 		a residue and a ligand"""
-		return random.randint(0,1)
+		if residue.isHydrophobic:
+			return 1
+		else:
+			return 0
 	
 	def hasArFtoF(self, residue):
 		"""Get the presence or absence of an aromatic face to face interaction 
 		between a residue and a ligand"""
-		return random.randint(0,1)
+		if residue.isAromatic:
+			return 1
+		else:
+			return 0
 	
 	def hasArFtoE(self, residue):
 		"""Get the presence or absence of an aromatic face to edge interaction 
 		between a residue and a ligand"""
-		return random.randint(0,1)
+		if residue.isAromatic:
+			return 1
+		else:
+			return 0
 	
 	def hasHBd(self, residue):
 		"""Get the presence or absence of a H-bond interaction between 
 		a residue as an acceptor and a ligand as a donor"""
-		return random.randint(0,1)
+		if residue.isHBa:
+			return 1
+		else:
+			return 0
 	
 	def hasHBa(self, residue):
 		"""Get the presence or absence of a H-bond interaction between 
 		a residue as a donor and a ligand as an acceptor"""
-		return random.randint(0,1)
+		if residue.isHBd:
+			return 1
+		else:
+			return 0
 
 	def hasXB(self, residue):
 		"""Get the presence or absence of a Halogen Bond"""
-		return random.randint(0,1)
+		if residue.isHBa:
+			return 1
+		else:
+			return 0
 	
 	def hasCationic(self, residue):
 		"""Get the presence or absence of an ionic interaction between a residue and a ligand as a cation"""
-		return random.randint(0,1)
+		if residue.isAnionic:
+			return 1
+		else:
+			return 0
 	
 	def hasAnionic(self, residue):
 		"""Get the presence or absence of an ionic interaction between a residue and a ligand as an anion"""
-		return random.randint(0,1)
+		if residue.isCationic:
+			return 1
+		else:
+			return 0
 
 	def generateBitstring(self, residue):
 		"""Generate the complete bitstring for the interactions of a residue with a ligand"""
@@ -88,7 +111,7 @@ class Ligand:
 		i=0
 		self.IFP = ''
 		for residue in protein.residues:
-			bitstring = self.generateBitstring(residue)
+			bitstring = self.generateBitstring(protein.residues[residue])
 			for value in bitstring:
 				if value == '1':
 					self.IFPvector.SetBit(i)
