@@ -95,5 +95,6 @@ Unless otherwise noted, all files in this directory and all subdirectories are d
 
 ### TODO
 
-- [ ] Run with multithreading
 - [ ] Evaluate the interactions (instead of returning randomly 0 or 1...)
+- [ ] Automatically detect the residues around the reference ligand
+- [ ] Run with multithreading
