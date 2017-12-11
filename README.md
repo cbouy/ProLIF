@@ -20,13 +20,9 @@ ProLIF is a tool designed to generate Interaction FingerPrints (IFP) and compute
 ProLIF is written in Python 3, and uses the following non-standard libraries:
 * [rdkit](http://www.rdkit.org/docs/Install.html)
 
-Once all necessary libraries are installed, open a terminal and launch ProLIF with the following command:
+To install rdkit with Anaconda, use the following command:
 ```
-python path/to/prolif.py --help
-```
-For Linux users, you can also make an alias for ease of use: add the following line in the `.bashrc` file located in your home directory: 
-```
-alias prolif="python path/to/prolif.py"
+conda install -c rdkit rdkit
 ```
 
 ## :small_blue_diamond: Usage
