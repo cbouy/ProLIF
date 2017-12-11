@@ -1,6 +1,16 @@
 # ProLIF
 Protein-Ligand Interaction Fingerprints
 
+:warning: This project is under development, do not use it in the current state :warning:
+
+### TODO
+
+- [ ] Evaluate the interactions
+- [ ] Automatically detect the residues around the reference ligand
+- [ ] Build a consensus bitstring when multiple references are given
+- [ ] Run with multithreading
+
+
 ## :small_blue_diamond: Description
 
 ProLIF is a tool designed to generate Interaction FingerPrints (IFP) and compute similarity scores for protein-ligand interactions, given a reference ligand and a list of binding-site residues.
@@ -92,9 +102,3 @@ Unless otherwise noted, all files in this directory and all subdirectories are d
    See the License for the specific language governing permissions and
    limitations under the License.
 ```
-
-### TODO
-
-- [ ] Evaluate the interactions (instead of returning randomly 0 or 1...)
-- [ ] Automatically detect the residues around the reference ligand
-- [ ] Run with multithreading
