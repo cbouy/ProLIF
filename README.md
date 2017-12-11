@@ -32,18 +32,6 @@ alias prolif="python path/to/prolif.py"
 ## :small_blue_diamond: Usage
 
 ```
-python prolif.py --help
-usage: prolif.py [-h] -r fileName -l fileName [fileName ...] -p fileName
-                 --residues int [int ...] [--chain letter] [-o filename] [-v]
-                 [--similarity {1,2,3,4,5,6,7,8,9,10,11,12}] [--alpha int]
-                 [--beta int]
-
-ProLIF: Protein Ligand Interaction Fingerprints
-Generates Interaction FingerPrints (IFP) and a similarity score for protein-ligand interactions
-
-optional arguments:
-  -h, --help            show this help message and exit
-
 INPUT arguments:
   -r fileName, --reference fileName
                         Path to your reference ligand. Type: SDF, MOL2, PDB
