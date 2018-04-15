@@ -6,7 +6,6 @@ Protein-Ligand Interaction Fingerprints
 ### TODO
 
 - [ ] Evaluate the interactions
-- [ ] Automatically detect the residues around the reference ligand
 - [ ] Build a consensus bitstring when multiple references are given
 - [ ] Run with multithreading
 

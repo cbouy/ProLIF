@@ -17,44 +17,65 @@
 from rdkit import Chem
 import os.path
 from src.residue import *
+from src.utils import *
 
 class Protein:
-	"""Class for a protein"""
-	
-	def __init__(self, file, residueList, chain):
-		"""Initialization of the protein, defined by a list of residues"""
-		self.residueList = residueList
-		self.chain = chain
-		self.file = file
-		fileExtension = os.path.splitext(file)[1]
-		if fileExtension == '.pdb':
-			self.residuesFromPDBFile()
-		else:
-			raise ValueError('{} files are not supported for the protein.'.format(fileExtension[1:].upper()))
+    """Class for a protein"""
 
-	def residuesFromPDBFile(self):
-		"""Read a PDB file and assign each line to an object of class Atom"""
-		# If a specific chain has been set:
-		if self.chain:
-			# Use RDKit to keep only the asked chain
-			chains = Chem.SplitMolByPDBChainId(Chem.MolFromPDBFile(self.file))
-			newFilename = '{}.chain{}'.format(self.file, self.chain)
-			Chem.MolToPDBFile(chains[self.chain], newFilename)
-			self.file = newFilename
-		# Read the file
-		with open(self.file, 'r') as file:
-			# initialization
-			residuesDict = {}
-			for residue in self.residueList:
-				residuesDict[residue] = []
-			# read each line and assign atoms of residues to a dictionary
-			for line in file.readlines():
-				if line[0:4] == 'ATOM':
-					for residue in residuesDict:
-						if int(line[22:26]) == residue:
-							residuesDict[residue].append(line)
-							break
-		# Create Residue object from the dictionary
-		self.residues = {}
-		for residue in residuesDict:
-			self.residues[residue] = Residue(residuesDict[residue])
+    def __init__(self, inputFile, reference, cutoff, residueList):
+        """Initialization of the protein, defined by a list of residues"""
+        self.residueList = residueList
+        self.residues = {}
+        self.inputFile = inputFile
+        fileExtension = os.path.splitext(inputFile)[1]
+        if fileExtension == '.mol2':
+            self.residuesFromMOL2File()
+        else:
+            raise ValueError('{} files are not supported for the protein.'.format(fileExtension[1:].upper()))
+        if self.residueList == None:
+            self.residueList = self.detectCloseResidues(reference, cutoff)
+        self.cleanResidues()
+
+    def residuesFromMOL2File(self):
+        """Read a MOL2 file and assign each line to an object of class Atom"""
+        # Create a molecule with RDKIT
+        self.mol = Chem.MolFromMol2File(self.inputFile, sanitize=True, removeHs=False)
+        # Read the atoms directly from the MOL2 file
+        rec = mol2_reader(self.inputFile, ignoreH=False)
+        # Loop through each RDKIT atom and assign them to a residue
+        residues = {}
+        coordinates = self.mol.GetConformer().GetPositions()
+        for i,(rd_at, at) in enumerate(zip(self.mol.GetAtoms(), rec)):
+            residue = at['residue']
+            if residue not in residues:
+                residues[residue] = []
+            atom = {
+                'resid'  :     residue,
+                'resname':     residue[:3],
+                'chain'  :     at['chain'],
+                'coordinates': coordinates[i],
+                'charge':      float(rd_at.GetProp('_TriposPartialCharge')),
+                'aromatic':    rd_at.GetIsAromatic(),
+                'ring':        rd_at.IsInRing(),
+            }
+            residues[residue].append(atom)
+        # Create residues objects
+        for residue in residues:
+            self.residues[residue] = Residue(residues[residue])
+
+    def detectCloseResidues(self, reference, cutoff):
+        """Detect residues close to a reference ligand"""
+        residueList = []
+        for residue in self.residues:
+            d = euclidianDistance(reference.centroid, self.residues[residue].centroid)
+            if d <= cutoff:
+                residueList.append(self.residues[residue].resid)
+        return residueList
+
+    def cleanResidues(self):
+        """Cleans the residues of the protein to only keep those in self.residueList"""
+        residues = {}
+        for residue in self.residues:
+            if residue in self.residueList:
+                residues[residue] = self.residues[residue]
+        self.residues = residues

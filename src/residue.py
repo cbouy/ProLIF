@@ -15,54 +15,13 @@
 """
 
 from rdkit import Chem
+from src.utils import getCentroid
 
 class Residue:
-	"""Class for a residue in a protein"""
-	
-	def __init__(self, atomList):
-		"""Initialization of the residue, defined by it's residue number"""
-		# Make a rdkit molecule object for the residue 
-		block = ''.join(line for line in atomList)
-		self.mol = Chem.MolFromPDBBlock(block, sanitize=True, removeHs=True)
-		# Retrieve information from PDB file and use it to set the residue name for the output
-		pdbInfo = self.mol.GetAtoms()[0].GetPDBResidueInfo()
-		self.aminoAcid = pdbInfo.GetResidueName()
-		self.setResName('{}{}'.format(self.aminoAcid,pdbInfo.GetResidueNumber()))
-		self.setProfile()
-	
-	def setResName(self, residueName):
-		"""Set the name of the residue"""
-		self.resName = residueName
+    """Class for a residue in a protein"""
 
-	def setProfile(self):
-		"""Set the profile of a residue based on the amino-acid"""
-		# Hydrophobic
-		if self.aminoAcid in ['ILE', 'VAL', 'LEU', 'PHE', 'MET', 'ALA', 'GLY', 'PRO', 'TRP', 'TYR']:
-			self.isHydrophobic = True
-		else:
-			self.isHydrophobic = False
-		# Aromatic
-		if self.aminoAcid in ['PHE', 'TRP', 'TYR', 'HIS']:
-			self.isAromatic = True
-		else:
-			self.isAromatic = False
-		# HB and XB acceptor
-		if self.aminoAcid in ['TYR', 'SER', 'THR', 'ASN', 'GLN', 'CYS']:
-			self.isHBa = True
-		else:
-			self.isHBa = False
-		# HB donor
-		if self.aminoAcid in ['TYR', 'SER', 'THR', 'ASN', 'GLN', 'TRP', 'ARG']:
-			self.isHBd = True
-		else:
-			self.isHBd = False
-		# Anionic
-		if self.aminoAcid in ['ASP', 'GLU']:
-			self.isAnionic = True
-		else:
-			self.isAnionic = False
-		# Cationic
-		if self.aminoAcid in ['ARG', 'HIS', 'LYS']:
-			self.isCationic = True
-		else:
-			self.isCationic = False
+    def __init__(self, atoms):
+        self.atoms    = atoms
+        self.resname  = atoms[0]['resname'] # 3 letter code
+        self.resid    = atoms[0]['resid']   # unique identifier for the residue
+        self.centroid = getCentroid(self.atoms)
