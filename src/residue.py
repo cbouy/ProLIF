@@ -25,3 +25,6 @@ class Residue:
         self.resname  = atoms[0]['resname'] # 3 letter code
         self.resid    = atoms[0]['resid']   # unique identifier for the residue
         self.centroid = getCentroid(self.atoms)
+
+    def __repr__(self):
+        return self.resid

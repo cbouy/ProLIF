@@ -36,6 +36,9 @@ class Protein:
             self.residueList = self.detectCloseResidues(reference, cutoff)
         self.cleanResidues()
 
+    def __repr__(self):
+        return self.inputFile
+
     def residuesFromMOL2File(self):
         """Read a MOL2 file and assign each line to an object of class Atom"""
         # Create a molecule with RDKIT

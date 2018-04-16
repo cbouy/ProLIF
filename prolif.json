@@ -1,0 +1,53 @@
+{
+  "HBdonor": {
+    "smarts": "[O,N,S]-[H]",
+    "distance": 3.2,
+    "angle": [0,30]
+  },
+  "HBacceptor": {
+    "smarts": "[O,N,*-;!+]",
+    "distance": 3.2,
+    "angle": [0,30]
+  },
+  "XBdonor": {
+    "smarts": "[F,Cl,Br,I]-[C,N,Si,F,Cl,Br,I]",
+    "distance": 3.2,
+    "angle": [0,30]
+  },
+  "XBacceptor": {
+    "smarts": "[N,O,P,S,Se,*-;!+]",
+    "distance": 3.2,
+    "angle": [0,30]
+  },
+  "cation": {
+    "smarts": "[*+]",
+    "distance": 4.0
+  },
+  "anion": {
+    "smarts": "[*-]",
+    "distance": 4.0
+  },
+  "FaceToFace": {
+    "smarts": "[a;R]",
+    "distance": 4.0,
+    "angle": [0,45]
+  },
+  "FaceToEdge": {
+    "smarts": "[a;R]",
+    "distance": 4.0,
+    "angle": [45,135]
+  },
+  "pi-cation": {
+    "smarts": "[*+,a&R]",
+    "distance": 4.0,
+    "angle": [0,45]
+  },
+  "hydrophobic": {
+    "smarts": "[C,S,F,Cl,Br,I]",
+    "distance": 4.0
+  },
+  "metal": {
+    "smarts": "[Ca,Cd,Co,Cu,Fe,Mg,Mn,Ni,Zn]",
+    "distance": 2.8
+  }
+}

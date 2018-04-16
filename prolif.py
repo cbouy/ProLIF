@@ -18,27 +18,9 @@
 
 from src.ligand import *
 from src.protein import *
-from rdkit import DataStructs
-import argparse, textwrap
-
-class Range:
-    """Class to raise an exception if the value is not between start and end.
-    Used for alpha and beta in Tversky"""
-    def __init__(self, start, end):
-        self.start = start
-        self.end = end
-    def __eq__(self, other):
-        return self.start <= other <= self.end
-    def __repr__(self):
-        return '{} to {}'.format(self.start, self.end)
-
-def calculateSimilarity(reference, ligand, method):
-    if   method == 'tanimoto':
-        return DataStructs.TanimotoSimilarity(reference,ligand)
-    elif method == 'dice':
-        return DataStructs.DiceSimilarity(reference,ligand)
-    elif method == 'tversky':
-        return DataStructs.TverskySimilarity(reference,ligand, args.alpha, args.beta)
+from src.fingerprint import *
+from src.utils import Range
+import argparse, textwrap, os, sys
 
 if __name__ == '__main__':
 
@@ -55,19 +37,32 @@ if __name__ == '__main__':
         help="Path to your ligand(s).")
     group_input.add_argument("-p", "--protein", metavar='fileName', type=str, required=True,
         help="Path to your protein.")
-    group_input.add_argument("--residues", type=str, nargs='+', required=False, default=None,
+    group_input.add_argument("--residues", type=str, nargs='+', default=None,
         help="Residues chosen for the interactions. Default: automatically detect residues within --cutoff of the reference ligand")
-    group_input.add_argument("--cutoff", metavar='float', type=float, required=False, default=6.0,
-        help="Cutoff for automatic residue detection. Default: 6.0 angströms")
-    group_input.add_argument("--json", metavar='fileName', type=str, default='prolif.json',
+    group_input.add_argument("--cutoff", metavar='float', type=float, required=False, default=5.0,
+        help="Cutoff for automatic residue detection. Default: 5.0 angströms")
+    group_input.add_argument("--json", metavar='fileName', type=str, default=os.path.join(os.path.dirname(sys.argv[0]),'prolif.json'),
         help="Path to a custom parameters file. Default: prolif.json")
 
     group_output = parser.add_argument_group('OUTPUT arguments')
-    group_output.add_argument("-o", "--output", metavar='filename', required=False, type=str,
+    group_output.add_argument("-o", "--output", metavar='filename', type=str,
         help="Path to the output CSV file")
     group_output.add_argument("-v", "--verbose", action="store_true", help="Increase terminal output verbosity")
 
     group_args = parser.add_argument_group('Other arguments')
+    group_args.add_argument("--interactions", metavar="bit", nargs='+',
+        choices=['HBdonor','HBacceptor','cation','anion','FaceToFace','FaceToEdge',
+            'pi-cation','hydrophobic','XBdonor','metal'],
+        default=['HBdonor','HBacceptor','cation','anion','FaceToFace','FaceToEdge','pi-cation','hydrophobic'],
+        help=textwrap.dedent("""List of interactions used to build the fingerprint.
+    -) hydrogen bond: HBdonor, HBacceptor
+    -) halogen bond:  XBdonor
+    -) ionic: cation, anion
+    -) pi-stacking: FaceToFace, FaceToEdge
+    -) hydrophobic
+    -) pi-cation
+    -) metal
+Default: HBdonor HBacceptor cation anion FaceToFace FaceToEdge pi-cation hydrophobic"""))
     group_args.add_argument("--similarity", choices=['tanimoto', 'dice', 'tversky'], default='tanimoto',
         help=textwrap.dedent("""Similarity score between molecule A and B :
 Let 'a' and 'b' be the number of bits activated in molecules A and B, and 'c' the number of activated bits in common.
@@ -83,23 +78,25 @@ Let 'a' and 'b' be the number of bits activated in molecules A and B, and 'c' th
     # Parse arguments from command line
     args = parser.parse_args()
     # Read files
-    reference = Ligand(args.reference)
-    protein = Protein(args.protein, reference, cutoff=args.cutoff, residueList=args.residues)
+    fingerprint = Fingerprint(args.json, args.interactions)
+    reference   = Ligand(args.reference)
+    protein     = Protein(args.protein, reference, cutoff=args.cutoff, residueList=args.residues)
+    length      = len(args.interactions)
     # Print residues on terminal:
     for residue in protein.residues:
-        print('{: >8s}'.format(protein.residues[residue].resid), end='')
+        print('{resid: >{length}s}'.format(resid=protein.residues[residue].resid, length=length), end='')
     print()
     # Generate the IFP between the reference ligand and the protein
-    reference.generateIFP(protein)
+    fingerprint.generateIFP(reference, protein)
     print(reference.IFP)
     # Loop over ligands:
     ligandList = []
     for lig in args.ligand:
         ligand = Ligand(lig)
         # Generate the IFP between a ligand and the protein
-        ligand.generateIFP(protein)
+        fingerprint.generateIFP(ligand, protein)
         # Calculate similarity
-        S = calculateSimilarity(reference.IFPvector, ligand.IFPvector, args.similarity)
+        S = ligand.getSimilarity(reference, args.similarity, args.alpha, args.beta)
         ligand.setSimilarity(S)
         print(ligand.IFP, '{:.4f}'.format(ligand.S))
         ligandList.append(ligand)
@@ -110,8 +107,8 @@ Let 'a' and 'b' be the number of bits activated in molecules A and B, and 'c' th
             for residue in protein.residues:
                 file.write(',{}'.format(protein.residues[residue].resid))
             file.write('\n')
-            CSIFP = ','.join(reference.IFP[i:i+8] for i in range(0, len(reference.IFP), 8))
+            CSIFP = ','.join(reference.IFP[i:i+length] for i in range(0, len(reference.IFP), length))
             file.write('{},1.0000,{}\n'.format(args.reference, CSIFP))
             for ligand in ligandList:
-                CSIFP = ','.join(ligand.IFP[i:i+8] for i in range(0, len(ligand.IFP), 8))
+                CSIFP = ','.join(ligand.IFP[i:i+length] for i in range(0, len(ligand.IFP), length))
                 file.write('{},{:.4f},{}\n'.format(ligand.file, ligand.S, CSIFP))

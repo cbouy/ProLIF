@@ -78,3 +78,14 @@ def get_mol_from_mol2(num_atoms_line, first_line, lines, ignoreH):
             'residue' : str(data[7]),
         })
     return MOL
+
+class Range:
+    """Class to raise an exception if the value is not between start and end.
+    Used for alpha and beta in Tversky"""
+    def __init__(self, start, end):
+        self.start = start
+        self.end = end
+    def __eq__(self, other):
+        return self.start <= other <= self.end
+    def __repr__(self):
+        return '{} to {}'.format(self.start, self.end)
