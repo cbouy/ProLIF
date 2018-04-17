@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/cbouy/ProLIF.svg?branch=master)](https://travis-ci.org/cbouy/ProLIF)
+
 # ProLIF
 Protein-Ligand Interaction Fingerprints
 
