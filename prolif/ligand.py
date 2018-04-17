@@ -47,6 +47,6 @@ class Ligand:
         elif method == 'tversky':
             return DataStructs.TverskySimilarity(reference.IFPvector, self.IFPvector, alpha, beta)
 
-    def setSimilarity(self, S):
+    def setSimilarity(self, score):
         """Set the value for the similarity score between the ligand and a reference"""
-        self.S = S
+        self.score = score

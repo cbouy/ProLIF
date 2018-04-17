@@ -3,13 +3,6 @@ Protein-Ligand Interaction Fingerprints
 
 :warning: This project is under development, do not use it in the current state :warning:
 
-### TODO
-
-- [ ] Evaluate the interactions
-- [ ] Build a consensus bitstring when multiple references are given
-- [ ] Run with multithreading
-
-
 ## :small_blue_diamond: Description
 
 ProLIF is a tool designed to generate Interaction FingerPrints (IFP) and compute similarity scores for protein-ligand interactions, given a reference ligand and a list of binding-site residues.
@@ -29,14 +22,15 @@ conda install -c rdkit rdkit
 ```
 INPUT arguments:
   -r fileName, --reference fileName
-                        Path to your reference ligand. Type: SDF, MOL2, PDB
+                        Path to your reference ligand.
   -l fileName [fileName ...], --ligand fileName [fileName ...]
-                        Path to your ligand(s). Type: SDF, MOL2, PDB
+                        Path to your ligand(s).
   -p fileName, --protein fileName
-                        Path to your protein or bindingSite. Type: PDB
-  --residues int [int ...]
-                        Residues chosen for the interactions. Example: 11 32 34 171 174
-  --chain letter        Restricts the IFP to the residues present in specified chain.
+                        Path to your protein.
+  --residues RESIDUES [RESIDUES ...]
+                        Residues chosen for the interactions. Default: automatically detect residues within --cutoff of the reference ligand
+  --cutoff float        Cutoff for automatic residue detection. Default: 5.0 angströms
+  --json fileName       Path to a custom parameters file. Default: prolif.json
 
 OUTPUT arguments:
   -o filename, --output filename
@@ -44,27 +38,27 @@ OUTPUT arguments:
   -v, --verbose         Increase terminal output verbosity
 
 Other arguments:
-  --similarity {1,2,3,4,5,6,7,8,9,10,11,12}
+  --interactions bit [bit ...]
+                        List of interactions used to build the fingerprint.
+                        -) hydrogen bond: HBdonor, HBacceptor
+                        -) halogen bond:  XBdonor
+                        -) ionic: cation, anion
+                        -) pi-stacking: FaceToFace, FaceToEdge
+                        -) hydrophobic
+                        -) pi-cation
+                        -) metal
+                        Default: HBdonor HBacceptor cation anion FaceToFace FaceToEdge pi-cation hydrophobic
+  --score {tanimoto,dice,tversky}
                         Similarity score between molecule A and B :
-                        Let 'a' and 'b' be the number of bits activated in molecules A and B,
-                        'c' the number of activated bits in common, and 'd' the number of inactivated bits in common.
-                            1) Tanimoto      : c/(a+b-c). Used by default
-                            2) Dice          : 2c/(a+b)
-                            3) Cosine        : c/sqrt(a*b)
-                            4) Sokal         : c/(2a+2b-3c)
-                            5) Russel        : c/(a+b+d-c)
-                            6) RogotGoldberg : (c/(a+b))+(d/(a+b+2d-2c))
-                            7) AllBit        : (a - (a XOR b))/a
-                            8) Kulczynski    : c*(a+b)/(2*a*b)
-                            9) McConnaughey  : (c*(a+b)-(a*b))/(a*b)
-                           10) Asymmetric    : c/min(a,b)
-                           11) BraunBlanquet : c/max(a,b)
-                           12) Tversky       : c/(alpha*(a-c)+beta*(b-c)+c)
-  --alpha int           Alpha parameter for Tversky
-  --beta int            Beta parameter for Tversky
+                        Let 'a' and 'b' be the number of bits activated in molecules A and B, and 'c' the number of activated bits in common.
+                        -) tanimoto : c/(a+b-c). Used by default
+                        -) dice     : 2c/(a+b)
+                        -) tversky  : c/(alpha*(a-c)+beta*(b-c)+c)
+  --alpha int           Alpha parameter for Tversky. Default: 0.7
+  --beta int            Beta parameter for Tversky. Default: 0.3
 
-Mandatory arguments: --reference --ligand --protein --residues
-1 single molecule per file.
+Mandatory arguments: --reference --ligand --protein
+MOL2 files only.
 ```
 
 ## :small_blue_diamond: License

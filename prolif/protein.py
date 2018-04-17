@@ -16,8 +16,8 @@
 
 from rdkit import Chem
 import os.path
-from src.residue import *
-from src.utils import *
+from .residue import *
+from .utils import *
 
 class Protein:
     """Class for a protein"""

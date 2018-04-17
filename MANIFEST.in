@@ -1,0 +1,2 @@
+include README.md LICENSE prolif/prolif.json
+recursive-include tests *.mol2

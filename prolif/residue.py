@@ -15,7 +15,7 @@
 """
 
 from rdkit import Chem
-from src.utils import getCentroid
+from .utils import getCentroid
 
 class Residue:
     """Class for a residue in a protein"""

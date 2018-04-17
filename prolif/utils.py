@@ -18,7 +18,7 @@ from math import sqrt
 import re
 
 def euclidianDistance(a,b):
-    """Euclidian distance between 2 lists of 3D coordinates"""
+    """Euclidian distance between 2 lists of coordinates"""
     return sqrt(sum([(xa-xb)**2 for xa,xb in zip(a,b)]))
 
 def getCentroid(atoms):
@@ -74,18 +74,7 @@ def get_mol_from_mol2(num_atoms_line, first_line, lines, ignoreH):
         # if it's not an H, or we don't ignore H, add this atom
         MOL.append(
         {
-            'chain'   : int(data[6]),
+            'chain'   : str(data[6]),
             'residue' : str(data[7]),
         })
     return MOL
-
-class Range:
-    """Class to raise an exception if the value is not between start and end.
-    Used for alpha and beta in Tversky"""
-    def __init__(self, start, end):
-        self.start = start
-        self.end = end
-    def __eq__(self, other):
-        return self.start <= other <= self.end
-    def __repr__(self):
-        return '{} to {}'.format(self.start, self.end)

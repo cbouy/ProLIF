@@ -28,6 +28,9 @@ class Fingerprint:
         # read interactions to compute
         self.interactions = interactions
 
+    def __repr__(self):
+        return ' '.join(self.interactions)
+
     def hasHydrophobic(self, ligand, residue):
         """Get the presence or absence of an hydrophobic interaction between
         a residue and a ligand"""
