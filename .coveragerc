@@ -1,0 +1,15 @@
+[run]
+source = prolif
+omit =
+  *tests*
+
+[report]
+omit =
+  */python?.?/*
+  *__init__*
+  *version*
+exclude_lines =
+  pragma: no cover
+  def __repr__
+  class Range:
+  if __name__ == .__main__.:

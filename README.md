@@ -1,3 +1,6 @@
+[![PyPI - Version](https://badge.fury.io/py/prolif.svg)](https://pypi.org/project/prolif/)
+[![PyPI - License](https://img.shields.io/pypi/l/prolif.svg)](https://pypi.org/project/prolif/)
+[![PyPI - Status](https://img.shields.io/pypi/status/prolif.svg)](https://pypi.org/project/prolif/)
 [![Build Status](https://travis-ci.org/cbouy/ProLIF.svg?branch=master)](https://travis-ci.org/cbouy/ProLIF)
 
 # ProLIF
@@ -5,11 +8,11 @@ Protein-Ligand Interaction Fingerprints
 
 :warning: This project is under development, do not use it in the current state :warning:
 
-## :small_blue_diamond: Description
+## Description
 
 ProLIF is a tool designed to generate Interaction FingerPrints (IFP) and compute similarity scores for protein-ligand interactions, given a reference ligand and a list of binding-site residues.
 
-## :small_blue_diamond: Installation
+## Installation
 
 ProLIF is written in Python 3, and uses the following non-standard libraries:
 * [rdkit](http://www.rdkit.org/docs/Install.html)
@@ -19,7 +22,7 @@ To install rdkit with Anaconda, use the following command:
 conda install -c rdkit rdkit
 ```
 
-## :small_blue_diamond: Usage
+## Usage
 
 ```
 INPUT arguments:
@@ -63,7 +66,7 @@ Mandatory arguments: --reference --ligand --protein
 MOL2 files only.
 ```
 
-## :small_blue_diamond: License
+## License
 
 Unless otherwise noted, all files in this directory and all subdirectories are distributed under the Apache License, Version 2.0:
 ```
