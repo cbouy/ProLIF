@@ -14,7 +14,7 @@ install:
   # Useful for debugging any issues with conda
   - conda info -a
   # Install dependencies
-  - conda create -q -c rdkit -n test-environment python=$TRAVIS_PYTHON_VERSION rdkit
+  - travis_wait 30 conda create -q -c rdkit -n test-environment python=$TRAVIS_PYTHON_VERSION rdkit
   - source activate test-environment
   - pip install coveralls
   - pip install coverage
