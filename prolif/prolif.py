@@ -60,7 +60,7 @@ def main(args):
                 file.write(',{}'.format(protein.residues[residue].resid))
             file.write('\n')
             CSIFP = ','.join(reference.IFP[i:i+length] for i in range(0, len(reference.IFP), length))
-            file.write('{},1.0000,{}\n'.format(args.reference, CSIFP))
+            file.write('{},{:.4f},{}\n'.format(args.reference, 1, CSIFP))
             for ligand in ligandList:
                 CSIFP = ','.join(ligand.IFP[i:i+length] for i in range(0, len(ligand.IFP), length))
                 file.write('{},{:.4f},{}\n'.format(ligand, ligand.score, CSIFP))

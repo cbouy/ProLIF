@@ -2,6 +2,7 @@
 [![PyPI - License](https://img.shields.io/pypi/l/prolif.svg)](https://pypi.org/project/prolif/)
 [![PyPI - Status](https://img.shields.io/pypi/status/prolif.svg)](https://pypi.org/project/prolif/)
 [![Build Status](https://travis-ci.org/cbouy/ProLIF.svg?branch=master)](https://travis-ci.org/cbouy/ProLIF)
+[![Coverage Status](https://coveralls.io/repos/github/cbouy/ProLIF/badge.svg?branch=master)](https://coveralls.io/github/cbouy/ProLIF?branch=master)
 
 # ProLIF
 Protein-Ligand Interaction Fingerprints

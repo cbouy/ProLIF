@@ -15,13 +15,16 @@
 """
 
 import json
+from os import path
 from rdkit import DataStructs
 from random import randint
 
 class Fingerprint:
     """Class that generates an interaction fingerprint between a protein and a ligand"""
 
-    def __init__(self, json_file, interactions):
+    def __init__(self,
+        json_file=path.join(path.dirname(__file__),'prolif.json'),
+        interactions=['HBdonor','HBacceptor','cation','anion','FaceToFace','FaceToEdge','pi-cation','hydrophobic']):
         # read parameters from json file
         with open(json_file) as data_file:
             self.prm = json.load(data_file)

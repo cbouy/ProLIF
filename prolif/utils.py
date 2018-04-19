@@ -25,7 +25,7 @@ def getCentroid(atoms):
     """Centroid coordinates (XYZ) of a list of atoms"""
     return [sum([atom['coordinates'][i] for atom in atoms])/len(atoms) for i in range(3)]
 
-def mol2_reader(mol2_file, ignoreH):
+def mol2_reader(mol2_file, ignoreH=False):
     '''A simple MOL2 file reader. Can only read files with a single molecule in it.
     Returns a molecules. Each molecule is a list of atoms, where an atom
     is a dictionnary containing atom informations.'''
@@ -53,7 +53,7 @@ def mol2_reader(mol2_file, ignoreH):
 
     return molecule
 
-def get_mol_from_mol2(num_atoms_line, first_line, lines, ignoreH):
+def get_mol_from_mol2(num_atoms_line, first_line, lines, ignoreH=False):
     '''Extracts a molecule from a mol2 file.
     num_atoms_line: index of the line containing the number of atoms, bonds...etc.
     first_line: index of the first line of the molecule to be extracted

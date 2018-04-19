@@ -39,24 +39,24 @@ class TestUtils(unittest.TestCase):
         atoms = [
             {'coordinates':[0,0,0]},
         ]
-        self.assertEqual(getCentroid(atoms), [0,0,0])
+        self.assertListEqual(getCentroid(atoms), [0,0,0])
 
     def test_getCentroid_0_0_0__2_2_2(self):
         atoms = [
             {'coordinates':[0,0,0]},
             {'coordinates':[2,2,2]},
         ]
-        self.assertEqual(getCentroid(atoms), [1,1,1])
+        self.assertListEqual(getCentroid(atoms), [1,1,1])
 
     def test_get_mol_from_mol2_nolines(self):
-        self.assertEqual(get_mol_from_mol2(0,0,['0 1 2 3 4 5 6 7'],False), [])
+        self.assertListEqual(get_mol_from_mol2(0,0,['0 1 2 3 4 5 6 7'],False), [])
 
     def test_get_mol_from_mol2_nb_atoms_not_int(self):
         with self.assertRaises(ValueError):
             get_mol_from_mol2(0,0,['foo 1 2 3 4 5 6 7'],False)
 
     def test_get_mol_from_mol2_hydrogen_ignored(self):
-        self.assertEqual(get_mol_from_mol2(0,0,['1 1 2 3 4 H 6 7'],True), [])
+        self.assertListEqual(get_mol_from_mol2(0,0,['1 1 2 3 4 H 6 7'],True), [])
 
     def test_get_mol_from_mol2_hydrogen_notignored(self):
         self.assertNotEqual(get_mol_from_mol2(0,0,['1 1 2 3 4 H 6 7'],False), [])
@@ -74,7 +74,7 @@ class TestUtils(unittest.TestCase):
 
     def test_mol2_reader_dummyfile(self):
         here = path.abspath(path.dirname(__file__))
-        self.assertEqual(mol2_reader(path.join(here,'files','dummy.mol2'),False), [{'chain':'1','residue':'XK2263'}])
+        self.assertListEqual(mol2_reader(path.join(here,'files','dummy.mol2'),False), [{'chain':'1','residue':'XK2263'}])
 
 if __name__ == '__main__':
     unittest.main()

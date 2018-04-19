@@ -39,7 +39,7 @@ class Ligand:
         self.IFP = IFP
         self.IFPvector = vector
 
-    def getSimilarity(self, reference, method, alpha, beta):
+    def getSimilarity(self, reference, method='tanimoto', alpha=None, beta=None):
         if   method == 'tanimoto':
             return DataStructs.TanimotoSimilarity(reference.IFPvector, self.IFPvector)
         elif method == 'dice':
