@@ -23,7 +23,7 @@ class Ligand:
         """Initialize the ligand from a file"""
         self.inputFile = inputFile
         fileExtension = os.path.splitext(inputFile)[1]
-        if fileExtension == '.mol2':
+        if fileExtension.lower() == '.mol2':
             self.mol = Chem.MolFromMol2File(inputFile, sanitize=True, removeHs=False)
         else:
             raise ValueError('{} files are not supported for the ligand.'.format(fileExtension[1:].upper()))
@@ -31,13 +31,16 @@ class Ligand:
         coordinates = self.mol.GetConformer().GetPositions()
         self.centroid = [sum([atom[i] for atom in coordinates])/len(coordinates) for i in range(3)]
 
+
     def __repr__(self):
         return self.inputFile
+
 
     def setIFP(self, IFP, vector):
         """Set the IFP for the ligand, as a bitstring and vector"""
         self.IFP = IFP
         self.IFPvector = vector
+
 
     def getSimilarity(self, reference, method='tanimoto', alpha=None, beta=None):
         if   method == 'tanimoto':
@@ -46,6 +49,7 @@ class Ligand:
             return DataStructs.DiceSimilarity(reference.IFPvector, self.IFPvector)
         elif method == 'tversky':
             return DataStructs.TverskySimilarity(reference.IFPvector, self.IFPvector, alpha, beta)
+
 
     def setSimilarity(self, score):
         """Set the value for the similarity score between the ligand and a reference"""

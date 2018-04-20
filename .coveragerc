@@ -8,8 +8,8 @@ omit =
   */python?.?/*
   *__init__*
   *version*
+  *command_line*
 exclude_lines =
   pragma: no cover
-  def __repr__
   class Range:
   if __name__ == .__main__.:

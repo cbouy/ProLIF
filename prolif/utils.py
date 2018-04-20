@@ -17,13 +17,18 @@
 from math import sqrt
 import re
 
+
 def euclidianDistance(a,b):
     """Euclidian distance between 2 lists of coordinates"""
+    if len(a) != len(b):
+        raise IndexError('Lists of coordinates must have the same length')
     return sqrt(sum([(xa-xb)**2 for xa,xb in zip(a,b)]))
+
 
 def getCentroid(atoms):
     """Centroid coordinates (XYZ) of a list of atoms"""
     return [sum([atom['coordinates'][i] for atom in atoms])/len(atoms) for i in range(3)]
+
 
 def mol2_reader(mol2_file, ignoreH=False):
     '''A simple MOL2 file reader. Can only read files with a single molecule in it.
@@ -31,6 +36,7 @@ def mol2_reader(mol2_file, ignoreH=False):
     is a dictionnary containing atom informations.'''
     num_atoms_lines = []
     first_lines     = []
+    molecules       = []
 
     # Read file
     with open(mol2_file, "r") as f:
@@ -49,9 +55,10 @@ def mol2_reader(mol2_file, ignoreH=False):
             first_lines.append(i+1)
 
     for num_atoms_line, first_line in zip(num_atoms_lines, first_lines):
-        molecule = get_mol_from_mol2(num_atoms_line, first_line, lines, ignoreH)
+        mol = get_mol_from_mol2(num_atoms_line, first_line, lines, ignoreH)
+        molecules.append(mol)
+    return molecules[0]
 
-    return molecule
 
 def get_mol_from_mol2(num_atoms_line, first_line, lines, ignoreH=False):
     '''Extracts a molecule from a mol2 file.

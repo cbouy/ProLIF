@@ -11,9 +11,10 @@ class TestUtils(unittest.TestCase):
     def test_euclidianDistance_0__0(self):
         self.assertNotEqual(euclidianDistance([0],[0]), 1)
 
-    def test_euclidianDistance_a__0(self):
-        with self.assertRaises(TypeError):
-            euclidianDistance(['a'], [0])
+    def test_euclidianDistance_0_0__0(self):
+        with self.assertRaises(IndexError):
+            euclidianDistance([0,0], [0])
+
 
     def test_getCentroid_empty_atoms(self):
         atoms = [
@@ -48,33 +49,35 @@ class TestUtils(unittest.TestCase):
         ]
         self.assertListEqual(getCentroid(atoms), [1,1,1])
 
+
     def test_get_mol_from_mol2_nolines(self):
-        self.assertListEqual(get_mol_from_mol2(0,0,['0 1 2 3 4 5 6 7'],False), [])
+        self.assertListEqual(get_mol_from_mol2(0,0,['0 1 2 3 4 5 6 7']), [])
 
     def test_get_mol_from_mol2_nb_atoms_not_int(self):
         with self.assertRaises(ValueError):
-            get_mol_from_mol2(0,0,['foo 1 2 3 4 5 6 7'],False)
+            get_mol_from_mol2(0,0,['foo 1 2 3 4 5 6 7'])
 
     def test_get_mol_from_mol2_hydrogen_ignored(self):
-        self.assertListEqual(get_mol_from_mol2(0,0,['1 1 2 3 4 H 6 7'],True), [])
+        self.assertListEqual(get_mol_from_mol2(0,0,['1 1 2 3 4 H 6 7'],ignoreH=True), [])
 
     def test_get_mol_from_mol2_hydrogen_notignored(self):
-        self.assertNotEqual(get_mol_from_mol2(0,0,['1 1 2 3 4 H 6 7'],False), [])
+        self.assertNotEqual(get_mol_from_mol2(0,0,['1 1 2 3 4 H 6 7']), [])
 
     def test_get_mol_from_mol2_not_hydrogen_notignored(self):
-        self.assertNotEqual(get_mol_from_mol2(0,0,['1 1 2 3 4 C 6 7'],True), [])
+        self.assertNotEqual(get_mol_from_mol2(0,0,['1 1 2 3 4 C 6 7'],ignoreH=True), [])
 
     def test_get_mol_from_mol2_not_enough_fields(self):
         with self.assertRaises(IndexError):
-            get_mol_from_mol2(0,0,['1 1 2 3 4'],False)
+            get_mol_from_mol2(0,0,['1 1 2 3 4'])
+
 
     def test_mol2_reader_nofile(self):
         with self.assertRaises(FileNotFoundError):
-            mol2_reader('not a mol2 file', False)
+            mol2_reader('not a mol2 file')
 
-    def test_mol2_reader_dummyfile(self):
+    def test_mol2_reader_dummyfile_integration(self):
         here = path.abspath(path.dirname(__file__))
-        self.assertListEqual(mol2_reader(path.join(here,'files','dummy.mol2'),False), [{'chain':'1','residue':'XK2263'}])
+        self.assertListEqual(mol2_reader(path.join(here,'files','dummy.mol2')), [{'chain':'1','residue':'XK2263'}])
 
 if __name__ == '__main__':
     unittest.main()

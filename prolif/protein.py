@@ -22,17 +22,17 @@ from .utils import *
 class Protein:
     """Class for a protein"""
 
-    def __init__(self, inputFile, reference, cutoff, residueList):
+    def __init__(self, inputFile, reference=None, cutoff=5.0, residueList=None):
         """Initialization of the protein, defined by a list of residues"""
         self.residueList = residueList
         self.residues = {}
         self.inputFile = inputFile
         fileExtension = os.path.splitext(inputFile)[1]
-        if fileExtension == '.mol2':
+        if fileExtension.lower() == '.mol2':
             self.residuesFromMOL2File()
         else:
             raise ValueError('{} files are not supported for the protein.'.format(fileExtension[1:].upper()))
-        if self.residueList == None:
+        if not self.residueList:
             self.residueList = self.detectCloseResidues(reference, cutoff)
         self.cleanResidues()
 
@@ -48,6 +48,9 @@ class Protein:
         # Loop through each RDKIT atom and assign them to a residue
         residues = {}
         coordinates = self.mol.GetConformer().GetPositions()
+        # Check if they have the same length
+        if len(rec) != len(self.mol.GetAtoms()):
+            raise IndexError('Mol2 readers found a different number of atoms')
         for i,(rd_at, at) in enumerate(zip(self.mol.GetAtoms(), rec)):
             residue = at['residue']
             if residue not in residues:
