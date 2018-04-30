@@ -1,7 +1,7 @@
 [run]
 source = prolif
 omit =
-  *tests*
+  *test*
 
 [report]
 omit =
@@ -9,7 +9,10 @@ omit =
   *__init__*
   *version*
   *command_line*
+  *logger*
+  *prolif.py*
 exclude_lines =
   pragma: no cover
   class Range:
   if __name__ == .__main__.:
+  .*logger.*

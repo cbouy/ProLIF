@@ -16,15 +16,17 @@
 
 from rdkit import Chem
 from .utils import getCentroid
+from .prolif import logger
 
 class Residue:
     """Class for a residue in a protein"""
 
-    def __init__(self, atoms):
-        self.atoms    = atoms
-        self.resname  = atoms[0]['resname'] # 3 letter code
-        self.resid    = atoms[0]['resid']   # unique identifier for the residue
-        self.centroid = getCentroid(self.atoms)
+    def __init__(self, mol):
+        self.mol      = mol  # RDkit molecule
+        self.resname  = self.mol.GetProp('resname')  # unique identifier for the residue
+        self.coordinates = self.mol.GetConformer().GetPositions() # atomic coordinates of the residue
+        self.centroid    = getCentroid(self.coordinates)  # centroid of the residue
+
 
     def __repr__(self):
-        return self.resid
+        return self.resname

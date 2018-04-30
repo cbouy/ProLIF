@@ -16,6 +16,8 @@
 
 from rdkit import Chem, DataStructs
 import os.path
+from .utils import getCentroid
+from .prolif import logger
 
 class Ligand:
     """Class for a ligand"""
@@ -24,12 +26,14 @@ class Ligand:
         self.inputFile = inputFile
         fileExtension = os.path.splitext(inputFile)[1]
         if fileExtension.lower() == '.mol2':
+            logger.debug('Reading {}'.format(self.inputFile))
             self.mol = Chem.MolFromMol2File(inputFile, sanitize=True, removeHs=False)
         else:
             raise ValueError('{} files are not supported for the ligand.'.format(fileExtension[1:].upper()))
         # Set Centroid
-        coordinates = self.mol.GetConformer().GetPositions()
-        self.centroid = [sum([atom[i] for atom in coordinates])/len(coordinates) for i in range(3)]
+        self.coordinates = self.mol.GetConformer().GetPositions()
+        self.centroid = getCentroid(self.coordinates)
+        logger.debug('Set centroid to {:.3f} {:.3f} {:.3f}'.format(*[c for c in self.centroid]))
 
 
     def __repr__(self):

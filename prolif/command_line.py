@@ -14,7 +14,7 @@ class Range:
         return '{} to {}'.format(self.start, self.end)
 
 def cli():
-    jsonpath = os.path.join(os.path.dirname(__file__),'prolif.json')
+    jsonpath = os.path.join(os.path.dirname(__file__),'parameters.json')
     description = 'ProLIF: Protein Ligand Interaction Fingerprints\nGenerates Interaction FingerPrints (IFP) and a similarity score for protein-ligand interactions'
     epilog = 'Mandatory arguments: --reference --ligand --protein\nMOL2 files only.'
     # Argparse
@@ -30,35 +30,47 @@ def cli():
         help="Path to your protein.")
     group_input.add_argument("--residues", type=str, nargs='+', default=None,
         help="Residues chosen for the interactions. Default: automatically detect residues within --cutoff of the reference ligand")
-    group_input.add_argument("--cutoff", metavar='float', type=float, required=False, default=5.0,
-        help="Cutoff for automatic residue detection. Default: 5.0 angströms")
+    group_input.add_argument("--cutoff", metavar='float', type=float, required=False, default=12.0,
+        help="Cutoff for automatic residue detection: distance between centroids. Default: 12.0 Å")
     group_input.add_argument("--json", metavar='fileName', type=str, default=jsonpath,
-        help="Path to a custom parameters file. Default: prolif.json")
+        help="Path to a custom parameters file. Default: {}".format(jsonpath))
 
     group_output = parser.add_argument_group('OUTPUT arguments')
     group_output.add_argument("-o", "--output", metavar='filename', type=str,
         help="Path to the output CSV file")
-    group_output.add_argument("-v", "--verbose", action="store_true", help="Increase terminal output verbosity")
-    group_output.add_argument("--version", action="version",
-        version='ProLIF {}'.format(__version__) ,help="Show version and exit")
+    group_output.add_argument("--log", metavar="level", help="Set the level of the logger. Default: ERROR",
+        choices=['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG'], default='ERROR')
+    group_output.add_argument("-v", "--version", action="version",
+        version='ProLIF {}'.format(__version__), help="Show version and exit")
 
     group_args = parser.add_argument_group('Other arguments')
+    table = [
+        ['', 'Class','Ligand','Residue'],
+        ['','―'*15,'―'*15,'―'*15],
+        ['HBdonor', 'Hydrogen bond', 'donor', 'acceptor'],
+        ['HBacceptor', 'Hydrogen bond', 'acceptor', 'donor'],
+        ['XBdonor', 'Halogen bond', 'donor', 'acceptor'],
+        ['XBacceptor', 'Halogen bond', 'acceptor', 'donor'],
+        ['cation', 'Ionic', 'cation', 'anion'],
+        ['anion', 'Ionic', 'anion', 'cation'],
+        ['hydrophobic', 'Hydrophobic', 'hydrophobic', 'hydrophobic'],
+        ['FaceToFace', 'Pi-stacking', 'aromatic', 'aromatic'],
+        ['FaceToEdge', 'Pi-stacking', 'aromatic', 'aromatic'],
+        ['pi-cation', 'Pi-cation', 'aromatic', 'cation'],
+        ['cation-pi', 'Pi-cation', 'cation', 'aromatic'],
+        ['MBdonor', 'Metal', 'metal', 'ligand'],
+        ['MBacceptor', 'Metal', 'ligand', 'metal'],
+    ]
+    defaults = ['HBdonor','HBacceptor','cation','anion','FaceToFace','FaceToEdge','hydrophobic']
+    table_as_str = '\n'.join(['{:>13} │{:>15}{:>15}{:>15}'.format(*line) for line in table])
     group_args.add_argument("--interactions", metavar="bit", nargs='+',
-        choices=['HBdonor','HBacceptor','cation','anion','FaceToFace','FaceToEdge',
-            'pi-cation','hydrophobic','XBdonor','metal'],
-        default=['HBdonor','HBacceptor','cation','anion','FaceToFace','FaceToEdge','pi-cation','hydrophobic'],
+        choices=[line[0] for line in table[2:]],
+        default=defaults,
         help=textwrap.dedent("""List of interactions used to build the fingerprint.
-    -) hydrogen bond: HBdonor, HBacceptor
-    -) halogen bond:  XBdonor
-    -) ionic: cation, anion
-    -) pi-stacking: FaceToFace, FaceToEdge
-    -) hydrophobic
-    -) pi-cation
-    -) metal
-    Default: HBdonor HBacceptor cation anion FaceToFace FaceToEdge pi-cation hydrophobic"""))
+{}\nDefault: {}""").format(table_as_str, ' '.join(defaults)))
     group_args.add_argument("--score", choices=['tanimoto', 'dice', 'tversky'], default='tanimoto',
         help=textwrap.dedent("""Similarity score between molecule A and B :
-    Let 'a' and 'b' be the number of bits activated in molecules A and B, and 'c' the number of activated bits in common.
+Let 'a' and 'b' be the number of bits activated in molecules A and B, and 'c' the number of activated bits in common.
     -) tanimoto : c/(a+b-c). Used by default
     -) dice     : 2c/(a+b)
     -) tversky  : c/(alpha*(a-c)+beta*(b-c)+c)

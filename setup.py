@@ -37,6 +37,7 @@ setup(name='prolif',
       entry_points = {
         'console_scripts': ['prolif=prolif.command_line:cli'],
         },
+      install_requires=['numpy>=1.13.3']
       dependency_links=['git+https://github.com/rdkit/rdkit'],
       test_suite="prolif.tests",
       include_package_data=True,

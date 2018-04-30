@@ -2,12 +2,12 @@
 [![PyPI - License](https://img.shields.io/pypi/l/prolif.svg)](https://pypi.org/project/prolif/)
 [![PyPI - Status](https://img.shields.io/pypi/status/prolif.svg)](https://pypi.org/project/prolif/)
 [![Build Status](https://travis-ci.org/cbouy/ProLIF.svg?branch=master)](https://travis-ci.org/cbouy/ProLIF)
-[![Coverage Status](https://coveralls.io/repos/github/cbouy/ProLIF/badge.svg?branch=master)](https://coveralls.io/github/cbouy/ProLIF?branch=master)
+[![Coveralls github branch](https://img.shields.io/coveralls/github/cbouy/ProLIF/master.svg)](https://coveralls.io/github/cbouy/ProLIF?branch=master)
 
 # ProLIF
 Protein-Ligand Interaction Fingerprints
 
-:warning: This project is under development, do not use it in the current state :warning:
+:warning: This project is under active development, and might be subject to drastic changes. Use at your own risks :warning:
 
 ## Description
 
@@ -16,11 +16,18 @@ ProLIF is a tool designed to generate Interaction FingerPrints (IFP) and compute
 ## Installation
 
 ProLIF is written in Python 3, and uses the following non-standard libraries:
+* numpy
 * [rdkit](http://www.rdkit.org/docs/Install.html)
 
-To install rdkit with Anaconda, use the following command:
+
+Make sure RDKit is installed before proceeding to the next step:
 ```
 conda install -c rdkit rdkit
+```
+
+Once this is done, you can download the package with Pip:
+```
+pip install prolif
 ```
 
 ## Usage
@@ -35,31 +42,40 @@ INPUT arguments:
                         Path to your protein.
   --residues RESIDUES [RESIDUES ...]
                         Residues chosen for the interactions. Default: automatically detect residues within --cutoff of the reference ligand
-  --cutoff float        Cutoff for automatic residue detection. Default: 5.0 angströms
-  --json fileName       Path to a custom parameters file. Default: prolif.json
+  --cutoff float        Cutoff for automatic residue detection: distance between centroids. Default: 12.0 Å
+  --json fileName       Path to a custom parameters file. Default: /home/cedric/Dropbox/work/prolif/prolif/parameters.json
 
 OUTPUT arguments:
   -o filename, --output filename
                         Path to the output CSV file
-  -v, --verbose         Increase terminal output verbosity
+  --log level           Set the level of the logger. Default: ERROR
+  -v, --version         Show version and exit
 
 Other arguments:
   --interactions bit [bit ...]
                         List of interactions used to build the fingerprint.
-                        -) hydrogen bond: HBdonor, HBacceptor
-                        -) halogen bond:  XBdonor
-                        -) ionic: cation, anion
-                        -) pi-stacking: FaceToFace, FaceToEdge
-                        -) hydrophobic
-                        -) pi-cation
-                        -) metal
-                        Default: HBdonor HBacceptor cation anion FaceToFace FaceToEdge pi-cation hydrophobic
+                                      │          Class         Ligand        Residue
+                                      │―――――――――――――――――――――――――――――――――――――――――――――
+                              HBdonor │  Hydrogen bond          donor       acceptor
+                           HBacceptor │  Hydrogen bond       acceptor          donor
+                              XBdonor │   Halogen bond          donor       acceptor
+                           XBacceptor │   Halogen bond       acceptor          donor
+                               cation │          Ionic         cation          anion
+                                anion │          Ionic          anion         cation
+                          hydrophobic │    Hydrophobic    hydrophobic    hydrophobic
+                           FaceToFace │    Pi-stacking       aromatic       aromatic
+                           FaceToEdge │    Pi-stacking       aromatic       aromatic
+                            pi-cation │      Pi-cation       aromatic         cation
+                            cation-pi │      Pi-cation         cation       aromatic
+                              MBdonor │          Metal          metal         ligand
+                           MBacceptor │          Metal         ligand          metal
+                        Default: HBdonor HBacceptor cation anion FaceToFace FaceToEdge hydrophobic
   --score {tanimoto,dice,tversky}
                         Similarity score between molecule A and B :
                         Let 'a' and 'b' be the number of bits activated in molecules A and B, and 'c' the number of activated bits in common.
-                        -) tanimoto : c/(a+b-c). Used by default
-                        -) dice     : 2c/(a+b)
-                        -) tversky  : c/(alpha*(a-c)+beta*(b-c)+c)
+                            -) tanimoto : c/(a+b-c). Used by default
+                            -) dice     : 2c/(a+b)
+                            -) tversky  : c/(alpha*(a-c)+beta*(b-c)+c)
   --alpha int           Alpha parameter for Tversky. Default: 0.7
   --beta int            Beta parameter for Tversky. Default: 0.3
 
@@ -71,7 +87,7 @@ MOL2 files only.
 
 Unless otherwise noted, all files in this directory and all subdirectories are distributed under the Apache License, Version 2.0:
 ```
-   Copyright 2017 Cédric BOUYSSET
+   Copyright 2017-2018 Cédric BOUYSSET
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.

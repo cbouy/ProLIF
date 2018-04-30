@@ -17,22 +17,25 @@
 from rdkit import Chem
 import os.path
 from .residue import *
-from .utils import *
+from .utils import euclidianDistance, getCentroid, mol2_reader
+from .prolif import logger
 
 class Protein:
     """Class for a protein"""
 
-    def __init__(self, inputFile, reference=None, cutoff=5.0, residueList=None):
+    def __init__(self, inputFile, reference=None, cutoff=12.0, residueList=None):
         """Initialization of the protein, defined by a list of residues"""
         self.residueList = residueList
         self.residues = {}
         self.inputFile = inputFile
         fileExtension = os.path.splitext(inputFile)[1]
         if fileExtension.lower() == '.mol2':
+            logger.debug('Reading {}'.format(self.inputFile))
             self.residuesFromMOL2File()
         else:
             raise ValueError('{} files are not supported for the protein.'.format(fileExtension[1:].upper()))
         if not self.residueList:
+            logger.info('Detecting residues within {} Å of the reference molecule'.format(cutoff))
             self.residueList = self.detectCloseResidues(reference, cutoff)
         self.cleanResidues()
 
@@ -41,41 +44,22 @@ class Protein:
 
     def residuesFromMOL2File(self):
         """Read a MOL2 file and assign each line to an object of class Atom"""
-        # Create a molecule with RDKIT
-        self.mol = Chem.MolFromMol2File(self.inputFile, sanitize=True, removeHs=False)
-        # Read the atoms directly from the MOL2 file
-        rec = mol2_reader(self.inputFile, ignoreH=False)
-        # Loop through each RDKIT atom and assign them to a residue
-        residues = {}
-        coordinates = self.mol.GetConformer().GetPositions()
-        # Check if they have the same length
-        if len(rec) != len(self.mol.GetAtoms()):
-            raise IndexError('Mol2 readers found a different number of atoms')
-        for i,(rd_at, at) in enumerate(zip(self.mol.GetAtoms(), rec)):
-            residue = at['residue']
-            if residue not in residues:
-                residues[residue] = []
-            atom = {
-                'resid'  :     residue,
-                'resname':     residue[:3],
-                'chain'  :     at['chain'],
-                'coordinates': coordinates[i],
-                'charge':      float(rd_at.GetProp('_TriposPartialCharge')),
-                'aromatic':    rd_at.GetIsAromatic(),
-                'ring':        rd_at.IsInRing(),
-            }
-            residues[residue].append(atom)
-        # Create residues objects
-        for residue in residues:
-            self.residues[residue] = Residue(residues[residue])
+        # Create a list of molecule with RDKIT
+        residues_list = mol2_reader(self.inputFile, ignoreH=False)
+        # Loop through each RDKIT molecule and create a Residue
+        for mol in residues_list:
+            resname = mol.GetProp('resname')
+            self.residues[resname] = Residue(mol)
+        logger.debug('Read {} residues'.format(len(self.residues)))
 
-    def detectCloseResidues(self, reference, cutoff):
+    def detectCloseResidues(self, reference, cutoff=12.0):
         """Detect residues close to a reference ligand"""
         residueList = []
         for residue in self.residues:
             d = euclidianDistance(reference.centroid, self.residues[residue].centroid)
             if d <= cutoff:
-                residueList.append(self.residues[residue].resid)
+                residueList.append(self.residues[residue].resname)
+        logger.info('Detected {} residues'.format(len(residueList)))
         return residueList
 
     def cleanResidues(self):

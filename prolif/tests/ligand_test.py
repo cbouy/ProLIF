@@ -18,7 +18,7 @@ class TestLigand(unittest.TestCase):
             lig = Ligand('ligand_test.py')
 
     def test_init_centroid(self):
-        self.assertListEqual(self.lig.centroid, [-8.611,15.060,27.954])
+        self.assertListEqual(self.lig.centroid, [-8.275, 14.5495, 27.947499999999998])
 
 
     def test_repr(self):

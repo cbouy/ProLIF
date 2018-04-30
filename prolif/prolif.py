@@ -16,31 +16,49 @@
    limitations under the License.
 """
 
+import logging
+from rdkit import RDLogger
+from .logger import logger, stream_handler
 from .ligand import *
 from .protein import *
 from .fingerprint import *
 
 def main(args):
-
+    # set logger level
+    lg = RDLogger.logger()
+    if args.log == 'CRITICAL':
+        lg.setLevel(RDLogger.CRITICAL)
+        stream_handler.setLevel(logging.CRITICAL)
+    elif args.log == 'ERROR':
+        lg.setLevel(RDLogger.ERROR)
+        stream_handler.setLevel(logging.ERROR)
+    elif args.log == 'WARNING':
+        lg.setLevel(RDLogger.WARNING)
+        stream_handler.setLevel(logging.WARNING)
+    elif args.log == 'INFO':
+        lg.setLevel(RDLogger.INFO)
+        stream_handler.setLevel(logging.INFO)
+    elif args.log == 'DEBUG':
+        lg.setLevel(RDLogger.DEBUG)
+        stream_handler.setLevel(logging.DEBUG)
+    logger.info('Using {} to compute similarity between fingerprints'.format(args.score))
     # Read files
     fingerprint = Fingerprint(args.json, args.interactions)
-    if args.verbose:
-        print('Built fingerprint generator using the following bitstring:')
-        print(fingerprint)
     reference   = Ligand(args.reference)
-    if args.verbose:
-        print('Read reference molecule from ' + str(reference))
     protein     = Protein(args.protein, reference, cutoff=args.cutoff, residueList=args.residues)
-    if args.verbose:
-        print('Read protein from ' + str(protein))
     length      = len(args.interactions)
+    residues    = [protein.residues[residue] for residue in sorted(protein.residues, key=lambda x: x[3:])]
     # Print residues on terminal:
-    for residue in protein.residues:
-        print('{resid: >{length}s}'.format(resid=protein.residues[residue].resid, length=length), end='')
-    print()
+    print(''.join('{resname: <{length}s}'.format(
+        resname=residue.resname, length=length
+        ) for residue in residues))
     # Generate the IFP between the reference ligand and the protein
     fingerprint.generateIFP(reference, protein)
-    print(reference.IFP)
+    ifp_list = [reference.IFP[i:i+length] for i in range(0, len(reference.IFP), length)]
+    print(''.join('{ifp: <{size}s}'.format(
+        ifp=ifp_list[i], size=len(residues[i].resname)
+        ) for i in range(len(ifp_list))), reference.inputFile)
+
     # Loop over ligands:
     ligandList = []
     for lig in args.ligand:
@@ -50,20 +68,24 @@ def main(args):
         # Calculate similarity
         score = ligand.getSimilarity(reference, args.score, args.alpha, args.beta)
         ligand.setSimilarity(score)
-        print(ligand.IFP, '{:.4f}'.format(ligand.score))
+        ifp_list = [ligand.IFP[i:i+length] for i in range(0, len(ligand.IFP), length)]
+        print(''.join('{ifp: <{size}s}'.format(ifp=ifp_list[i], size=len(residues[i].resname)) for i in range(len(ifp_list)) ),
+              '{:.3f}'.format(ligand.score), ligand.inputFile)
         ligandList.append(ligand)
+
     # Output
     if args.output:
-        with open(args.output, 'w') as file:
-            file.write('File,SimilarityScore')
-            for residue in protein.residues:
-                file.write(',{}'.format(protein.residues[residue].resid))
-            file.write('\n')
+        logger.info('Writing CSV formatted output to ' + args.output)
+        with open(args.output, 'w') as f:
+            f.write('File,SimilarityScore')
+            for residue in residues:
+                f.write(',{}'.format(protein.residues[residue].resname))
+            f.write('\n')
             CSIFP = ','.join(reference.IFP[i:i+length] for i in range(0, len(reference.IFP), length))
-            file.write('{},{:.4f},{}\n'.format(args.reference, 1, CSIFP))
+            f.write('{},,{}\n'.format(args.reference, CSIFP))
             for ligand in ligandList:
                 CSIFP = ','.join(ligand.IFP[i:i+length] for i in range(0, len(ligand.IFP), length))
-                file.write('{},{:.4f},{}\n'.format(ligand, ligand.score, CSIFP))
+                f.write('{},{:.3f},{}\n'.format(ligand.inputFile, ligand.score, CSIFP))
 
 if __name__ == '__main__':
     main(args)
