@@ -16,7 +16,7 @@
 
 from rdkit import Chem
 import os.path
-from .residue import *
+from .residue import Residue
 from .utils import euclidianDistance, getCentroid, mol2_reader
 from .prolif import logger
 

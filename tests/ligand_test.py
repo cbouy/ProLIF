@@ -1,15 +1,15 @@
 import unittest
 from os import path
 from rdkit import DataStructs
-from prolif.ligand import *
+from prolif.ligand import Ligand
 from prolif.fingerprint import Fingerprint
 
 class TestLigand(unittest.TestCase):
     """Test the ligand.py module"""
 
     def setUp(self):
-        self.here = path.abspath(path.dirname(__file__))
-        self.lig  = Ligand(path.join(self.here,'files','dummy.mol2'))
+        self.examples = path.abspath(path.join(path.dirname(__file__), '..', 'examples'))
+        self.lig  = Ligand(path.join(self.examples,'ligand.mol2'))
         self.fp   = Fingerprint()
 
 
@@ -18,11 +18,11 @@ class TestLigand(unittest.TestCase):
             lig = Ligand('ligand_test.py')
 
     def test_init_centroid(self):
-        self.assertListEqual(self.lig.centroid, [-8.275, 14.5495, 27.947499999999998])
+        self.assertListEqual(self.lig.centroid, [-0.6397851063829787, 26.40136382978724, 10.785044680851064])
 
 
     def test_repr(self):
-        self.assertEqual(str(self.lig), path.join(self.here,'files','dummy.mol2'))
+        self.assertEqual(str(self.lig), path.join(self.examples,'ligand.mol2'))
 
 
     def test_setIFP(self):

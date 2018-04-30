@@ -18,12 +18,12 @@
   },
   "aromatic": {
     "smarts":     [
-                    "[a;R]1:[a;R]:[a;R]:[a;R]:[a;R]:[a;R]:1",
-                    "[a;R]1:[a;R]:[a;R]:[a;R]:[a;R]:1"
+                    "[a]1:[a]:[a]:[a]:[a]:[a]:1",
+                    "[a]1:[a]:[a]:[a]:[a]:1"
                   ],
     "distance":   4.2,
     "FaceToFace": [0,45],
-    "FaceToEdge": [45,135]
+    "EdgeToFace": [45,135]
   },
   "pi-cation": {
     "distance": 4.2,

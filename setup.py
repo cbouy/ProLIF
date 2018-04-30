@@ -12,16 +12,17 @@ exec(open('prolif/version.py').read())
 with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
-setup(name='prolif',
-      version=__version__,
-      description='Protein-Ligand Interaction Fingerprints',
-      long_description=long_description,
-      long_description_content_type='text/markdown',
-      url='https://github.com/cbouy/ProLIF',
-      author='Cédric Bouysset',
-      author_email='bouysset.cedric@gmail.com',
-      license='Apache License, Version 2.0',
-      classifiers=[
+setup(
+    name='prolif',
+    version=__version__,
+    description='Protein-Ligand Interaction Fingerprints',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
+    url='https://github.com/cbouy/ProLIF',
+    author='Cédric Bouysset',
+    author_email='bouysset.cedric@gmail.com',
+    license='Apache License, Version 2.0',
+    classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Console',
         'Operating System :: OS Independent',
@@ -31,14 +32,28 @@ setup(name='prolif',
         'Programming Language :: Python :: 3.6',
         'Topic :: Scientific/Engineering :: Bio-Informatics',
         'Topic :: Scientific/Engineering :: Chemistry',
-      ],
-      keywords='science chemistry biology drug-design chemoinformatics virtual-screening',
-      packages=['prolif'],
-      entry_points = {
+    ],
+    keywords='science chemistry biology drug-design chemoinformatics virtual-screening',
+    packages=['prolif'],
+    entry_points = {
         'console_scripts': ['prolif=prolif.command_line:cli'],
-        },
-      install_requires=['numpy>=1.13.3'],
-      dependency_links=['git+https://github.com/rdkit/rdkit'],
-      test_suite="prolif.tests",
-      include_package_data=True,
-      zip_safe=False)
+    },
+    python_requires='>=3',
+    install_requires=['numpy>=1.13.3'],
+    extra_requires={
+        'test': ['coveralls','coverage'],
+    },
+    dependency_links=['git+https://github.com/rdkit/rdkit'],
+    test_suite="tests",
+    package_data={
+        'prolif':   ['parameters.json'],
+        'examples': ['protein.mol2', 'ligand.mol2'],
+    },
+    include_package_data=True,
+    project_urls={
+        'Source':       'https://github.com/cbouy/ProLIF/',
+        'Bug Reports':  'https://github.com/cbouy/ProLIF/issues',
+        'Say Thanks!':  'https://saythanks.io/to/cbouy',
+    },
+    zip_safe=False,
+)

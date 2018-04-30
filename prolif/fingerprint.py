@@ -26,7 +26,7 @@ class Fingerprint:
 
     def __init__(self,
         json_file=path.join(path.dirname(__file__),'parameters.json'),
-        interactions=['HBdonor','HBacceptor','cation','anion','FaceToFace','FaceToEdge','hydrophobic']):
+        interactions=['HBdonor','HBacceptor','cation','anion','FaceToFace','EdgeToFace','hydrophobic']):
         # read parameters from json file
         with open(json_file) as data_file:
             logger.debug('Reading JSON parameters file from {}'.format(json_file))
@@ -273,7 +273,7 @@ class Fingerprint:
         return 0
 
 
-    def hasFaceToEdge(self, ligand, residue):
+    def hasEdgeToFace(self, ligand, residue):
         """Get the presence or absence of an aromatic face to edge interaction
         between a residue and a ligand"""
         for pi_res in self.AROMATIC_PATTERNS:
@@ -296,7 +296,7 @@ class Fingerprint:
                             res_normal = getNormalVector(pi_vector)
                             # angle
                             angle = getAngle(res_normal, lig_normal)
-                            if isinAngleLimits(angle, *self.prm["aromatic"]["FaceToEdge"]):
+                            if isinAngleLimits(angle, *self.prm["aromatic"]["EdgeToFace"]):
                                 return 1
         return 0
 
@@ -353,8 +353,8 @@ class Fingerprint:
                 bitstring.append(self.hasAnionic(ligand, residue))
             elif interaction == 'FaceToFace':
                 bitstring.append(self.hasFaceToFace(ligand, residue))
-            elif interaction == 'FaceToEdge':
-                bitstring.append(self.hasFaceToEdge(ligand, residue))
+            elif interaction == 'EdgeToFace':
+                bitstring.append(self.hasEdgeToFace(ligand, residue))
             elif interaction == 'pi-cation':
                 bitstring.append(self.hasPiCation(ligand, residue))
             elif interaction == 'cation-pi':

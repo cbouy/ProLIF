@@ -1,2 +1,12 @@
-include README.md LICENSE prolif/parameters.json
-recursive-include prolif *.mol2
+
+# README
+include README.md
+
+# License
+include LICENSE
+
+# Parameters file
+recursive-include prolif *.json
+
+# Files for tests
+recursive-include examples *.mol2

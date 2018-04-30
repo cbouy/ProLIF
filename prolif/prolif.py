@@ -47,7 +47,7 @@ def main(args):
     reference   = Ligand(args.reference)
     protein     = Protein(args.protein, reference, cutoff=args.cutoff, residueList=args.residues)
     length      = len(args.interactions)
-    residues    = [protein.residues[residue] for residue in sorted(protein.residues, key=lambda x: x[3:])]
+    residues    = [protein.residues[residue] for residue in sorted(protein.residues, key=lambda x: int(x[3:]))]
     # Print residues on terminal:
     print(''.join('{resname: <{length}s}'.format(
         resname=residue.resname, length=length

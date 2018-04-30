@@ -55,13 +55,13 @@ def cli():
         ['anion', 'Ionic', 'anion', 'cation'],
         ['hydrophobic', 'Hydrophobic', 'hydrophobic', 'hydrophobic'],
         ['FaceToFace', 'Pi-stacking', 'aromatic', 'aromatic'],
-        ['FaceToEdge', 'Pi-stacking', 'aromatic', 'aromatic'],
+        ['EdgeToFace', 'Pi-stacking', 'aromatic', 'aromatic'],
         ['pi-cation', 'Pi-cation', 'aromatic', 'cation'],
         ['cation-pi', 'Pi-cation', 'cation', 'aromatic'],
         ['MBdonor', 'Metal', 'metal', 'ligand'],
         ['MBacceptor', 'Metal', 'ligand', 'metal'],
     ]
-    defaults = ['HBdonor','HBacceptor','cation','anion','FaceToFace','FaceToEdge','hydrophobic']
+    defaults = ['HBdonor','HBacceptor','cation','anion','FaceToFace','EdgeToFace','hydrophobic']
     table_as_str = '\n'.join(['{:>13} │{:>15}{:>15}{:>15}'.format(*line) for line in table])
     group_args.add_argument("--interactions", metavar="bit", nargs='+',
         choices=[line[0] for line in table[2:]],

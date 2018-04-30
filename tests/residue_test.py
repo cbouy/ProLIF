@@ -7,7 +7,8 @@ class TestResidue(unittest.TestCase):
     """Test the residue.py module"""
 
     def setUp(self):
-        self.mol = Chem.MolFromMol2File(path.join(path.abspath(path.dirname(__file__)), 'files', 'dummy.mol2'))
+        self.examples = path.abspath(path.join(path.dirname(__file__), '..', 'examples'))
+        self.mol = Chem.MolFromMol2File(path.join(self.examples, 'ligand.mol2'))
         self.mol.SetProp('resname', 'ALA1')
         self.residue = Residue(self.mol)
 
