@@ -15,7 +15,7 @@
 """
 
 from rdkit import Chem
-from .utils import getCentroid
+from rdkit.Chem import rdMolTransforms
 from .prolif import logger
 
 class Residue:
@@ -25,7 +25,7 @@ class Residue:
         self.mol      = mol  # RDkit molecule
         self.resname  = self.mol.GetProp('resname')  # unique identifier for the residue
         self.coordinates = self.mol.GetConformer().GetPositions() # atomic coordinates of the residue
-        self.centroid    = getCentroid(self.coordinates)  # centroid of the residue
+        self.centroid    = rdMolTransforms.ComputeCentroid(self.mol.GetConformer())  # centroid of the residue
 
 
     def __repr__(self):

@@ -14,56 +14,35 @@
    limitations under the License.
 """
 
-import re
-from math import degrees
+import re, textwrap
 from rdkit import Chem
-import numpy as np
+from .logger import logger
 
 
-def euclidianDistance(a,b):
-    """Euclidian distance between 2 lists of coordinates"""
-    if len(a) != len(b):
-        raise IndexError('Lists of coordinates must have the same length: {} - {}'.format(a,b))
-    return np.sqrt(sum([(xa-xb)**2 for xa,xb in zip(a,b)]))
+def get_resnumber(resname):
+    pattern = re.search(r'(\d+)', resname)
+    return int(pattern.group(0))
 
 
 def getCentroid(coordinates):
-    """Centroid coordinates (XYZ) of a list of atoms"""
+    """Centroid XYZ coordinates for an array of XYZ coordinates"""
     return [sum([c[i] for c in coordinates])/len(coordinates) for i in range(3)]
-
-
-def getAngle(ba, bc):
-    """Angle ABC between 2 vectors ba and bc, in degrees"""
-    cosine_angle = np.dot(ba, bc) / (np.linalg.norm(ba) * np.linalg.norm(bc))
-    angle = np.arccos(cosine_angle)
-    return degrees(angle)
-
-
-def pointsToVector(b, a):
-    """Converts 2 points b and a to a vector BA"""
-    # convert to numpy array
-    npa = np.array(a)
-    npb = np.array(b)
-    # create vector
-    ba = npa - npb
-    return ba
 
 
 def getNormalVector(v):
     """Get a vector perpendicular to the input vector"""
-    if (v[0] == 0) and (v[1] == 0):
-        if v[2] == 0:
+    if (v.x == 0) and (v.y == 0):
+        if v.z == 0:
             raise ValueError('Null vector has no normal vector')
         return [0,1,0]
-    return [-v[1], v[0], 0]
+    return [-v.y, v.x, 0]
 
 
 def isinAngleLimits(angle, min_angle, max_angle):
-    """Check if an angle value is between 2 min and max angles"""
+    """Check if an angle value is between min and max angles in degrees"""
     if (min_angle <= angle <= max_angle) or (min_angle <= 180 - angle <= max_angle):
         return True
-    else:
-        return False
+    return False
 
 
 def get_mol2_records(lines):

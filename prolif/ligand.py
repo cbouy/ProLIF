@@ -14,9 +14,11 @@
    limitations under the License.
 """
 
-from rdkit import Chem, DataStructs
 import os.path
-from .utils import getCentroid
+from rdkit import Chem, DataStructs
+from rdkit.Chem import rdMolTransforms, rdmolops
+from rdkit import Geometry as rdGeometry
+from numpy import argmax
 from .prolif import logger
 
 class Ligand:
@@ -32,8 +34,8 @@ class Ligand:
             raise ValueError('{} files are not supported for the ligand.'.format(fileExtension[1:].upper()))
         # Set Centroid
         self.coordinates = self.mol.GetConformer().GetPositions()
-        self.centroid = getCentroid(self.coordinates)
-        logger.debug('Set centroid to {:.3f} {:.3f} {:.3f}'.format(*[c for c in self.centroid]))
+        self.centroid = rdMolTransforms.ComputeCentroid(self.mol.GetConformer())
+        logger.debug('Set ligand centroid to {:.3f} {:.3f} {:.3f}'.format(*[c for c in self.centroid]))
 
 
     def __repr__(self):
@@ -58,3 +60,41 @@ class Ligand:
     def setSimilarity(self, score):
         """Set the value for the similarity score between the ligand and a reference"""
         self.score = score
+
+
+    def get_USRlike_atoms(self):
+        """Returns 4 rdkit Point3D objects similar to those used in USR:
+        - centroid (ctd)
+        - closest to ctd (cst)
+        - farthest from cst (fct) (usually ctd but let's avoid computing too many dist matrices)
+        - farthest from fct (ftf)"""
+        matrix = rdmolops.Get3DDistanceMatrix(self.mol)
+        conf = self.mol.GetConformer()
+        coords = conf.GetPositions()
+
+        # centroid
+        ctd = rdMolTransforms.ComputeCentroid(conf)
+
+        # closest to centroid
+        min_dist = 100
+        for atom in self.mol.GetAtoms():
+            point = rdGeometry.Point3D(*coords[atom.GetIdx()])
+            dist = ctd.Distance(point)
+            if dist < min_dist:
+                min_dist = dist
+                cst = point
+                cst_idx = atom.GetIdx()
+
+        # farthest from cst
+        fct_idx = argmax(matrix[cst_idx])
+        fct = rdGeometry.Point3D(*coords[fct_idx])
+
+        # farthest from fct
+        ftf_idx = argmax(matrix[fct_idx])
+        ftf = rdGeometry.Point3D(*coords[ftf_idx])
+
+        logger.debug('ctd={}'.format(list(ctd)))
+        logger.debug('cst={}'.format(list(cst)))
+        logger.debug('fct={}'.format(list(fct)))
+        logger.debug('ftf={}'.format(list(ftf)))
+        return ctd, cst, fct, ftf

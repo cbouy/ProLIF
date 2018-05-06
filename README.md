@@ -2,17 +2,16 @@
 [![PyPI - License](https://img.shields.io/pypi/l/prolif.svg)](https://pypi.org/project/prolif/)
 [![PyPI - Status](https://img.shields.io/pypi/status/prolif.svg)](https://pypi.org/project/prolif/)
 [![Build Status](https://travis-ci.org/cbouy/ProLIF.svg?branch=master)](https://travis-ci.org/cbouy/ProLIF)
-[![Coveralls github branch](https://img.shields.io/coveralls/github/cbouy/ProLIF/master.svg)](https://coveralls.io/github/cbouy/ProLIF?branch=master)
 [![Say Thanks!](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/cbouy)
 
 # ProLIF
 Protein-Ligand Interaction Fingerprints
 
-:warning: This project is under active development, and might be subject to drastic changes. Use at your own risks :warning:
+:warning: This project is currently under active development, and might be subject to drastic changes. :warning:
 
 ## Description
 
-ProLIF is a tool designed to generate Interaction FingerPrints (IFP) and compute similarity scores for protein-ligand interactions, given a reference ligand and a list of binding-site residues.
+ProLIF is a tool designed to generate Interaction FingerPrints (IFP) and compute similarity scores for protein-ligand interactions, given a reference ligand.
 
 ## Installation
 
@@ -26,12 +25,14 @@ Make sure RDKit is installed before proceeding to the next step:
 conda install -c rdkit rdkit
 ```
 
-Once this is done, you can download the package with Pip:
+Once this is done, you can download and install the package with Pip:
 ```
 pip install prolif
 ```
 
 ## Usage
+
+ProLIF is a command-line tool, so open a terminal and use the `prolif` command with the following arguments:
 
 ```
 INPUT arguments:
@@ -43,8 +44,8 @@ INPUT arguments:
                         Path to your protein.
   --residues RESIDUES [RESIDUES ...]
                         Residues chosen for the interactions. Default: automatically detect residues within --cutoff of the reference ligand
-  --cutoff float        Cutoff for automatic residue detection: distance between centroids. Default: 12.0 Å
-  --json fileName       Path to a custom parameters file. Default: /home/cedric/Dropbox/work/prolif/prolif/parameters.json
+  --cutoff float        Cutoff distance for automatic detection of binding site residues. Default: 5.0 Å
+  --json fileName       Path to a custom parameters file.
 
 OUTPUT arguments:
   -o filename, --output filename

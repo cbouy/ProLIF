@@ -19,9 +19,10 @@
 import logging
 from rdkit import RDLogger
 from .logger import logger, stream_handler
-from .ligand import *
-from .protein import *
-from .fingerprint import *
+from .ligand import Ligand
+from .protein import Protein
+from .fingerprint import Fingerprint
+from .utils import get_resnumber
 
 def main(args):
     # set logger level
@@ -46,15 +47,15 @@ def main(args):
     fingerprint = Fingerprint(args.json, args.interactions)
     reference   = Ligand(args.reference)
     protein     = Protein(args.protein, reference, cutoff=args.cutoff, residueList=args.residues)
-    length      = len(args.interactions)
-    residues    = [protein.residues[residue] for residue in sorted(protein.residues, key=lambda x: int(x[3:]))]
+    residues    = [protein.residues[residue] for residue in sorted(protein.residues, key=get_resnumber)]
     # Print residues on terminal:
-    print(''.join('{resname: <{length}s}'.format(
-        resname=residue.resname, length=length
+    bitstr_length  = len(args.interactions)
+    print(''.join('{resname: <{bitstr_length}s}'.format(
+        resname=residue.resname, bitstr_length=bitstr_length
         ) for residue in residues))
     # Generate the IFP between the reference ligand and the protein
     fingerprint.generateIFP(reference, protein)
-    ifp_list = [reference.IFP[i:i+length] for i in range(0, len(reference.IFP), length)]
+    ifp_list = [reference.IFP[i:i+bitstr_length] for i in range(0, len(reference.IFP), bitstr_length)]
     print(''.join('{ifp: <{size}s}'.format(
         ifp=ifp_list[i], size=len(residues[i].resname)
         ) for i in range(len(ifp_list))), reference.inputFile)
@@ -68,7 +69,7 @@ def main(args):
         # Calculate similarity
         score = ligand.getSimilarity(reference, args.score, args.alpha, args.beta)
         ligand.setSimilarity(score)
-        ifp_list = [ligand.IFP[i:i+length] for i in range(0, len(ligand.IFP), length)]
+        ifp_list = [ligand.IFP[i:i+bitstr_length] for i in range(0, len(ligand.IFP), bitstr_length)]
         print(''.join('{ifp: <{size}s}'.format(ifp=ifp_list[i], size=len(residues[i].resname)) for i in range(len(ifp_list)) ),
               '{:.3f}'.format(ligand.score), ligand.inputFile)
         ligandList.append(ligand)
@@ -81,11 +82,12 @@ def main(args):
             for residue in residues:
                 f.write(',{}'.format(protein.residues[residue].resname))
             f.write('\n')
-            CSIFP = ','.join(reference.IFP[i:i+length] for i in range(0, len(reference.IFP), length))
+            CSIFP = ','.join(reference.IFP[i:i+bitstr_length] for i in range(0, len(reference.IFP), bitstr_length))
             f.write('{},,{}\n'.format(args.reference, CSIFP))
             for ligand in ligandList:
-                CSIFP = ','.join(ligand.IFP[i:i+length] for i in range(0, len(ligand.IFP), length))
+                CSIFP = ','.join(ligand.IFP[i:i+bitstr_length] for i in range(0, len(ligand.IFP), bitstr_length))
                 f.write('{},{:.3f},{}\n'.format(ligand.inputFile, ligand.score, CSIFP))
+
 
 if __name__ == '__main__':
     main(args)

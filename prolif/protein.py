@@ -15,15 +15,16 @@
 """
 
 from rdkit import Chem
+from rdkit import Geometry as rdGeometry
 import os.path
 from .residue import Residue
-from .utils import euclidianDistance, getCentroid, mol2_reader
+from .utils import mol2_reader
 from .prolif import logger
 
 class Protein:
     """Class for a protein"""
 
-    def __init__(self, inputFile, reference=None, cutoff=12.0, residueList=None):
+    def __init__(self, inputFile, reference=None, cutoff=10.0, residueList=None):
         """Initialization of the protein, defined by a list of residues"""
         self.residueList = residueList
         self.residues = {}
@@ -52,13 +53,23 @@ class Protein:
             self.residues[resname] = Residue(mol)
         logger.debug('Read {} residues'.format(len(self.residues)))
 
-    def detectCloseResidues(self, reference, cutoff=12.0):
+    def detectCloseResidues(self, reference, cutoff=5.0):
         """Detect residues close to a reference ligand"""
         residueList = []
-        for residue in self.residues:
-            d = euclidianDistance(reference.centroid, self.residues[residue].centroid)
-            if d <= cutoff:
-                residueList.append(self.residues[residue].resname)
+        for ref_point in reference.get_USRlike_atoms():
+            for residue in self.residues:
+                if self.residues[residue].centroid.Distance(ref_point) > 14:
+                    # skip residues with centroid far from ligand reference point
+                    continue
+                if self.residues[residue].resname in residueList:
+                    # skip residues already inside the list
+                    continue
+                for atom in self.residues[residue].mol.GetConformer().GetPositions():
+                    res_point = rdGeometry.Point3D(*atom)
+                    dist = ref_point.Distance(res_point)
+                    if dist <= cutoff:
+                        residueList.append(self.residues[residue].resname)
+                        break
         logger.info('Detected {} residues'.format(len(residueList)))
         return residueList
 

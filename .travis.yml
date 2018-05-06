@@ -24,8 +24,8 @@ script:
   - prolif --help
   - prolif --version
   - prolif --log INFO --protein examples/protein.mol2 --reference examples/ligand.mol2 --ligand examples/ligand.mol2
-after_success:
-  # Run tests with coverage
-  - coverage run setup.py test
-  # Create report for coveralls
-  - coveralls
+#after_success:
+#  # Run tests with coverage
+#  - coverage run setup.py test
+#  # Create report for coveralls
+#  - coveralls

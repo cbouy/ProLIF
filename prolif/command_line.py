@@ -1,3 +1,19 @@
+"""
+   Copyright 2017 Cédric BOUYSSET
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+"""
+
 import argparse, textwrap, os, sys
 from . import prolif
 from .version import __version__
@@ -30,8 +46,8 @@ def cli():
         help="Path to your protein.")
     group_input.add_argument("--residues", type=str, nargs='+', default=None,
         help="Residues chosen for the interactions. Default: automatically detect residues within --cutoff of the reference ligand")
-    group_input.add_argument("--cutoff", metavar='float', type=float, required=False, default=12.0,
-        help="Cutoff for automatic residue detection: distance between centroids. Default: 12.0 Å")
+    group_input.add_argument("--cutoff", metavar='float', type=float, required=False, default=5.0,
+        help="Cutoff distance for automatic detection of binding site residues. Default: 5.0 Å")
     group_input.add_argument("--json", metavar='fileName', type=str, default=jsonpath,
         help="Path to a custom parameters file. Default: {}".format(jsonpath))
 
@@ -67,14 +83,14 @@ def cli():
         choices=[line[0] for line in table[2:]],
         default=defaults,
         help=textwrap.dedent("""List of interactions used to build the fingerprint.
-{}\nDefault: {}""").format(table_as_str, ' '.join(defaults)))
+            {}\nDefault: {}""").format(table_as_str, ' '.join(defaults)))
     group_args.add_argument("--score", choices=['tanimoto', 'dice', 'tversky'], default='tanimoto',
         help=textwrap.dedent("""Similarity score between molecule A and B :
-Let 'a' and 'b' be the number of bits activated in molecules A and B, and 'c' the number of activated bits in common.
-    -) tanimoto : c/(a+b-c). Used by default
-    -) dice     : 2c/(a+b)
-    -) tversky  : c/(alpha*(a-c)+beta*(b-c)+c)
-    """))
+            Let 'a' and 'b' be the number of bits activated in molecules A and B, and 'c' the number of activated bits in common.
+                -) tanimoto : c/(a+b-c). Used by default
+                -) dice     : 2c/(a+b)
+                -) tversky  : c/(alpha*(a-c)+beta*(b-c)+c)
+                """))
     group_args.add_argument("--alpha", metavar="int", type=float, choices=[Range(0.0, 1.0)], default=0.7,
         help="Alpha parameter for Tversky. Default: 0.7")
     group_args.add_argument("--beta", metavar="int", type=float, choices=[Range(0.0, 1.0)], default=0.3,

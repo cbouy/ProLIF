@@ -23,7 +23,7 @@ setup(
     author_email='bouysset.cedric@gmail.com',
     license='Apache License, Version 2.0',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Environment :: Console',
         'Operating System :: OS Independent',
         'Intended Audience :: Science/Research',
@@ -40,18 +40,17 @@ setup(
     },
     python_requires='>=3',
     install_requires=['numpy>=1.13.3'],
-    extra_requires={
-        'test': ['coveralls','coverage'],
-    },
+    #extra_requires={
+    #    'test': ['coveralls','coverage'],
+    #},
     dependency_links=['git+https://github.com/rdkit/rdkit'],
-    test_suite="tests",
+    #test_suite="tests",
     package_data={
         'prolif':   ['parameters.json'],
         'examples': ['protein.mol2', 'ligand.mol2'],
     },
     include_package_data=True,
     project_urls={
-        'Source':       'https://github.com/cbouy/ProLIF/',
         'Bug Reports':  'https://github.com/cbouy/ProLIF/issues',
         'Say Thanks!':  'https://saythanks.io/to/cbouy',
     },
