@@ -16,74 +16,73 @@
 
 from rdkit.Chem import Draw, rdDepictor
 import rdkit.Geometry as rdGeometry
-from matplotlib.colors import ColorConverter
 from copy import deepcopy
 import numpy as np
 
 
 STYLE = {
     'HBdonor': {
-        'color': 'orangered',
+        'color': '#FF4500', # orangered
         'dash': '8,8',
         'width': '2',
     },
     'HBacceptor': {
-        'color': 'deepskyblue',
+        'color': '#00BFFF', # deepskyblue
         'dash' : '8,8',
         'width': '2',
     },
     'cation': {
-        'color': 'red',
+        'color': '#FF0000', # red
         'dash': '2,10',
         'width': '6',
     },
     'anion': {
-        'color': 'royalblue',
+        'color': '#4169E1', # royalblue
         'dash': '2,10',
         'width': '6',
     },
     'XBdonor': {
-        'color': 'magenta',
+        'color': '#FF00FF', # magenta
         'dash': '6,6',
         'width': '2',
     },
     'XBacceptor': {
-        'color': 'darkviolet',
+        'color': '#9400D3', # darkviolet
         'dash': '6,6',
         'width': '2',
     },
     'hydrophobic': {
-        'color': 'lime',
+        'color': '#00FF00', # lime
         'dash': '1,5',
         'width': '8',
     },
     'FaceToFace':{
-        'color': 'saddlebrown',
+        'color': '#8B4513', # saddlebrown
         'dash': '6,4,2,4',
         'width': '2',
     },
     'EdgeToFace':{
-        'color': 'chartreuse',
+        'color': '#7FFF00', # chartreuse
         'dash': '6,4,2,4',
         'width': '2',
     },
     'pi-cation':{
-        'color': 'gold',
+        'color': '#FFD700', # gold
         'dash': '6,4,2,4',
         'width': '2',
     },
     'cation-pi':{
-        'color': 'cyan',
+        'color': '#00FFFF', # cyan
         'dash': '6,4,2,4',
         'width': '2',
     },
     'MBdonor':{
-        'color': 'crimson',
+        'color': '#DC143C', # crimson
         'dash': '2,5',
         'width': '3',
     },
     'MBacceptor':{
-        'color': 'slateblue',
+        'color': '#6A5ACD', # slateblue
         'dash': '2,5',
         'width': '3',
     },
@@ -94,7 +93,6 @@ def generate_interaction_diagram(ligand, fingerprint, output=None, init=False):
     residues of the protein"""
     # Create canvas with options
     drawer = Draw.MolDraw2DSVG(400,400)
-    palette = ColorConverter()
     options = drawer.drawOptions()
     #options.useBWAtomPalette()
     options.padding = 0.2
@@ -132,7 +130,7 @@ def generate_interaction_diagram(ligand, fingerprint, output=None, init=False):
                 at = drawer.GetDrawCoords(ligand_atom)
             # draw dashed line between interacting atom and residue
             draw += ['''<path d='M {rx},{ry} {ax},{ay}' stroke-dasharray='{dash}' style='fill:none;fill-rule:evenodd;stroke:{c};stroke-width:{w}px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:0.7' />'''.format(
-                c=palette.colors[style['color']], dash=style['dash'], w=style['width'],
+                c=style['color'], dash=style['dash'], w=style['width'],
                 rx=res_x, ry=res_y, ax=at.x, ay=at.y)]
         # draw the residue
         draw += ['''\
