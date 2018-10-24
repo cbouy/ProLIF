@@ -40,6 +40,7 @@ class Fingerprint:
         # read interactions to compute
         self.interactions = interactions
         logger.info('Built fingerprint generator using the following bitstring: {}'.format(' '.join(self.interactions)))
+        self.diagram = {}
 
 
     def __repr__(self):
@@ -64,6 +65,15 @@ class Fingerprint:
                     # compute distance between points
                     dist = lig_atom.Distance(res_atom)
                     if dist <= self.prm["hydrophobic"]["distance"]:
+                        try:
+                            self.diagram[ligand.inputFile]
+                        except KeyError:
+                            self.diagram[ligand.inputFile] = {}
+                        try:
+                            self.diagram[ligand.inputFile][residue.resname]
+                        except KeyError:
+                            self.diagram[ligand.inputFile][residue.resname] = {}
+                        self.diagram[ligand.inputFile][residue.resname]['hydrophobic'] = lig_match[0]
                         return 1
         return 0
 
@@ -92,6 +102,15 @@ class Fingerprint:
                         # get angle between hd and ha in degrees
                         angle = degrees(hd.AngleTo(ha))
                         if isinAngleLimits(angle, *self.prm["HBond"]["angle"]):
+                            try:
+                                self.diagram[ligand.inputFile]
+                            except KeyError:
+                                self.diagram[ligand.inputFile] = {}
+                            try:
+                                self.diagram[ligand.inputFile][residue.resname]
+                            except KeyError:
+                                self.diagram[ligand.inputFile][residue.resname] = {}
+                            self.diagram[ligand.inputFile][residue.resname]['HBdonor'] = lig_match[1]
                             return 1
         return 0
 
@@ -117,6 +136,15 @@ class Fingerprint:
                         # get angle between hd and ha in degrees
                         angle = degrees(hd.AngleTo(ha))
                         if isinAngleLimits(angle, *self.prm["HBond"]["angle"]):
+                            try:
+                                self.diagram[ligand.inputFile]
+                            except KeyError:
+                                self.diagram[ligand.inputFile] = {}
+                            try:
+                                self.diagram[ligand.inputFile][residue.resname]
+                            except KeyError:
+                                self.diagram[ligand.inputFile][residue.resname] = {}
+                            self.diagram[ligand.inputFile][residue.resname]['HBacceptor'] = lig_match[0]
                             return 1
         return 0
 
@@ -142,6 +170,15 @@ class Fingerprint:
                         # get angle between hd and ha in degrees
                         angle = degrees(xd.AngleTo(xa))
                         if isinAngleLimits(angle, *self.prm["XBond"]["angle"]):
+                            try:
+                                self.diagram[ligand.inputFile]
+                            except KeyError:
+                                self.diagram[ligand.inputFile] = {}
+                            try:
+                                self.diagram[ligand.inputFile][residue.resname]
+                            except KeyError:
+                                self.diagram[ligand.inputFile][residue.resname] = {}
+                            self.diagram[ligand.inputFile][residue.resname]['XBdonor'] = lig_match[1]
                             return 1
         return 0
 
@@ -167,6 +204,15 @@ class Fingerprint:
                         # get angle between hd and ha in degrees
                         angle = degrees(xd.AngleTo(xa))
                         if isinAngleLimits(angle, *self.prm["XBond"]["angle"]):
+                            try:
+                                self.diagram[ligand.inputFile]
+                            except KeyError:
+                                self.diagram[ligand.inputFile] = {}
+                            try:
+                                self.diagram[ligand.inputFile][residue.resname]
+                            except KeyError:
+                                self.diagram[ligand.inputFile][residue.resname] = {}
+                            self.diagram[ligand.inputFile][residue.resname]['XBacceptor'] = lig_match[0]
                             return 1
         return 0
 
@@ -185,6 +231,15 @@ class Fingerprint:
                     a = rdGeometry.Point3D(*residue.coordinates[res_match[0]])
                     dist = c.Distance(a)
                     if dist <= self.prm["ionic"]["distance"]:
+                        try:
+                            self.diagram[ligand.inputFile]
+                        except KeyError:
+                            self.diagram[ligand.inputFile] = {}
+                        try:
+                            self.diagram[ligand.inputFile][residue.resname]
+                        except KeyError:
+                            self.diagram[ligand.inputFile][residue.resname] = {}
+                        self.diagram[ligand.inputFile][residue.resname]['cation'] = lig_match[0]
                         return 1
         return 0
 
@@ -203,6 +258,15 @@ class Fingerprint:
                     c = rdGeometry.Point3D(*residue.coordinates[lig_match[0]])
                     dist = a.Distance(c)
                     if dist <= self.prm["ionic"]["distance"]:
+                        try:
+                            self.diagram[ligand.inputFile]
+                        except KeyError:
+                            self.diagram[ligand.inputFile] = {}
+                        try:
+                            self.diagram[ligand.inputFile][residue.resname]
+                        except KeyError:
+                            self.diagram[ligand.inputFile][residue.resname] = {}
+                        self.diagram[ligand.inputFile][residue.resname]['anion'] = lig_match[0]
                         return 1
         return 0
 
@@ -238,6 +302,15 @@ class Fingerprint:
                             centroid_charge = centroid.DirectionVector(cat)
                             angle = degrees(centroid_normal.AngleTo(centroid_charge))
                             if isinAngleLimits(angle, *self.prm["pi-cation"]["angle"]):
+                                try:
+                                    self.diagram[ligand.inputFile]
+                                except KeyError:
+                                    self.diagram[ligand.inputFile] = {}
+                                try:
+                                    self.diagram[ligand.inputFile][residue.resname]
+                                except KeyError:
+                                    self.diagram[ligand.inputFile][residue.resname] = {}
+                                self.diagram[ligand.inputFile][residue.resname]['pi-cation'] = lig_match
                                 return 1
         return 0
 
@@ -272,6 +345,15 @@ class Fingerprint:
                             centroid_charge = centroid.DirectionVector(cat)
                             angle = degrees(centroid_normal.AngleTo(centroid_charge))
                             if isinAngleLimits(angle, *self.prm["pi-cation"]["angle"]):
+                                try:
+                                    self.diagram[ligand.inputFile]
+                                except KeyError:
+                                    self.diagram[ligand.inputFile] = {}
+                                try:
+                                    self.diagram[ligand.inputFile][residue.resname]
+                                except KeyError:
+                                    self.diagram[ligand.inputFile][residue.resname] = {}
+                                self.diagram[ligand.inputFile][residue.resname]['cation-pi'] = lig_match[0]
                                 return 1
         return 0
 
@@ -302,6 +384,15 @@ class Fingerprint:
                             # angle
                             angle = degrees(res_normal.AngleTo(lig_normal))
                             if isinAngleLimits(angle, *self.prm["aromatic"]["FaceToFace"]):
+                                try:
+                                    self.diagram[ligand.inputFile]
+                                except KeyError:
+                                    self.diagram[ligand.inputFile] = {}
+                                try:
+                                    self.diagram[ligand.inputFile][residue.resname]
+                                except KeyError:
+                                    self.diagram[ligand.inputFile][residue.resname] = {}
+                                self.diagram[ligand.inputFile][residue.resname]['FaceToFace'] = lig_centroid
                                 return 1
         return 0
 
@@ -332,6 +423,15 @@ class Fingerprint:
                             # angle
                             angle = degrees(res_normal.AngleTo(lig_normal))
                             if isinAngleLimits(angle, *self.prm["aromatic"]["EdgeToFace"]):
+                                try:
+                                    self.diagram[ligand.inputFile]
+                                except KeyError:
+                                    self.diagram[ligand.inputFile] = {}
+                                try:
+                                    self.diagram[ligand.inputFile][residue.resname]
+                                except KeyError:
+                                    self.diagram[ligand.inputFile][residue.resname] = {}
+                                self.diagram[ligand.inputFile][residue.resname]['EdgeToFace'] = lig_centroid
                                 return 1
         return 0
 
@@ -349,6 +449,15 @@ class Fingerprint:
                     res_atom = rdGeometry.Point3D(*residue.coordinates[res_match[0]])
                     dist = lig_atom.Distance(res_atom)
                     if dist <= self.prm["metallic"]["distance"]:
+                        try:
+                            self.diagram[ligand.inputFile]
+                        except KeyError:
+                            self.diagram[ligand.inputFile] = {}
+                        try:
+                            self.diagram[ligand.inputFile][residue.resname]
+                        except KeyError:
+                            self.diagram[ligand.inputFile][residue.resname] = {}
+                        self.diagram[ligand.inputFile][residue.resname]['MBdonor'] = lig_match[0]
                         return 1
         return 0
 
@@ -366,6 +475,15 @@ class Fingerprint:
                     res_atom = rdGeometry.Point3D(*residue.coordinates[res_match[0]])
                     dist = lig_atom.Distance(res_atom)
                     if dist <= self.prm["metallic"]["distance"]:
+                        try:
+                            self.diagram[ligand.inputFile]
+                        except KeyError:
+                            self.diagram[ligand.inputFile] = {}
+                        try:
+                            self.diagram[ligand.inputFile][residue.resname]
+                        except KeyError:
+                            self.diagram[ligand.inputFile][residue.resname] = {}
+                        self.diagram[ligand.inputFile][residue.resname]['MBacceptor'] = lig_match[0]
                         return 1
         return 0
 

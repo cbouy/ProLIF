@@ -54,6 +54,8 @@ def cli():
     group_output = parser.add_argument_group('OUTPUT arguments')
     group_output.add_argument("-o", "--output", metavar='filename', type=str,
         help="Path to the output CSV file")
+    group_output.add_argument("-d", "--diagram", action="store_true",
+        help="Output 2D interaction diagrams for each ligand")
     group_output.add_argument("--log", metavar="level", help="Set the level of the logger. Default: ERROR",
         choices=['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG'], default='ERROR')
     group_output.add_argument("-v", "--version", action="version",
@@ -61,8 +63,8 @@ def cli():
 
     group_args = parser.add_argument_group('Other arguments')
     table = [
-        ['', 'Class','Ligand','Residue'],
-        ['','―'*15,'―'*15,'―'*15],
+        ['Name', 'Class','Ligand','Residue'],
+        ['―'*15,'―'*15,'―'*15,'―'*15],
         ['HBdonor', 'Hydrogen bond', 'donor', 'acceptor'],
         ['HBacceptor', 'Hydrogen bond', 'acceptor', 'donor'],
         ['XBdonor', 'Halogen bond', 'donor', 'acceptor'],
@@ -78,7 +80,7 @@ def cli():
         ['MBacceptor', 'Metal', 'ligand', 'metal'],
     ]
     defaults = ['HBdonor','HBacceptor','cation','anion','FaceToFace','EdgeToFace','hydrophobic']
-    table_as_str = '\n'.join(['{:>13} │{:>15}{:>15}{:>15}'.format(*line) for line in table])
+    table_as_str = '\n' + '\n'.join(['{:>15}{:>15}{:>15}{:>15}'.format(*line) for line in table])
     group_args.add_argument("--interactions", metavar="bit", nargs='+',
         choices=[line[0] for line in table[2:]],
         default=defaults,

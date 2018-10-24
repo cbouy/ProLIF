@@ -26,8 +26,8 @@ class Ligand:
     def __init__(self, inputFile):
         """Initialize the ligand from a file"""
         self.inputFile = inputFile
-        fileExtension = os.path.splitext(inputFile)[1]
-        if fileExtension.lower() == '.mol2':
+        self.inputName, self.fileExtension = os.path.splitext(inputFile)
+        if self.fileExtension.lower() == '.mol2':
             logger.debug('Reading {}'.format(self.inputFile))
             self.mol = Chem.MolFromMol2File(inputFile, sanitize=True, removeHs=False)
         else:

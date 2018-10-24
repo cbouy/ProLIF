@@ -23,6 +23,7 @@ from .ligand import Ligand
 from .protein import Protein
 from .fingerprint import Fingerprint
 from .utils import get_resnumber
+from .diagram import generate_interaction_diagram
 
 def main(args):
     # set logger level
@@ -43,25 +44,47 @@ def main(args):
         lg.setLevel(RDLogger.DEBUG)
         stream_handler.setLevel(logging.DEBUG)
     logger.info('Using {} to compute similarity between fingerprints'.format(args.score))
+
     # Read files
     fingerprint = Fingerprint(args.json, args.interactions)
     reference   = Ligand(args.reference)
     protein     = Protein(args.protein, reference, cutoff=args.cutoff, residueList=args.residues)
     residues    = [protein.residues[residue] for residue in sorted(protein.residues, key=get_resnumber)]
+
+    # Initialize output
+    if args.output:
+        logger.info('Writing CSV formatted output to ' + args.output)
+        with open(args.output, 'w') as f:
+            f.write('File,SimilarityScore')
+            for residue in residues:
+                f.write(',{}'.format(protein.residues[residue].resname))
+            f.write('\n')
+
     # Print residues on terminal:
     bitstr_length  = len(args.interactions)
     print(''.join('{resname: <{bitstr_length}s}'.format(
         resname=residue.resname, bitstr_length=bitstr_length
         ) for residue in residues))
+
     # Generate the IFP between the reference ligand and the protein
     fingerprint.generateIFP(reference, protein)
     ifp_list = [reference.IFP[i:i+bitstr_length] for i in range(0, len(reference.IFP), bitstr_length)]
-    print(''.join('{ifp: <{size}s}'.format(
-        ifp=ifp_list[i], size=len(residues[i].resname)
-        ) for i in range(len(ifp_list))), reference.inputFile)
+    print(
+        ''.join('{ifp: <{size}s}'.format(
+            ifp=ifp_list[i], size=len(residues[i].resname)
+        ) for i in range(len(ifp_list))), reference.inputName
+    )
+    if args.output:
+        logger.debug('Writing reference IFP to ' + args.output)
+        with open(args.output, 'a') as f:
+            # comma separated IFP
+            CSIFP = ','.join(reference.IFP[i:i+bitstr_length] for i in range(0, len(reference.IFP), bitstr_length))
+            f.write('{},,{}\n'.format(args.reference, CSIFP))
+    if args.diagram:
+        logger.debug('Generating 2D interaction diagram for the reference')
+        generate_interaction_diagram(reference, fingerprint, init=True)
 
     # Loop over ligands:
-    ligandList = []
     for lig in args.ligand:
         ligand = Ligand(lig)
         # Generate the IFP between a ligand and the protein
@@ -70,23 +93,22 @@ def main(args):
         score = ligand.getSimilarity(reference, args.score, args.alpha, args.beta)
         ligand.setSimilarity(score)
         ifp_list = [ligand.IFP[i:i+bitstr_length] for i in range(0, len(ligand.IFP), bitstr_length)]
-        print(''.join('{ifp: <{size}s}'.format(ifp=ifp_list[i], size=len(residues[i].resname)) for i in range(len(ifp_list)) ),
-              '{:.3f}'.format(ligand.score), ligand.inputFile)
-        ligandList.append(ligand)
-
-    # Output
-    if args.output:
-        logger.info('Writing CSV formatted output to ' + args.output)
-        with open(args.output, 'w') as f:
-            f.write('File,SimilarityScore')
-            for residue in residues:
-                f.write(',{}'.format(protein.residues[residue].resname))
-            f.write('\n')
-            CSIFP = ','.join(reference.IFP[i:i+bitstr_length] for i in range(0, len(reference.IFP), bitstr_length))
-            f.write('{},,{}\n'.format(args.reference, CSIFP))
-            for ligand in ligandList:
+        print(
+            ''.join('{ifp: <{size}s}'.format(
+                ifp=ifp_list[i], size=len(residues[i].resname)
+            ) for i in range(len(ifp_list))),
+            '{:.3f}'.format(ligand.score), ligand.inputName
+        )
+        # Output
+        if args.output:
+            logger.debug('Appending ligand IFP to ' + args.output)
+            with open(args.output, 'a') as f:
+                # comma separated IFP
                 CSIFP = ','.join(ligand.IFP[i:i+bitstr_length] for i in range(0, len(ligand.IFP), bitstr_length))
                 f.write('{},{:.3f},{}\n'.format(ligand.inputFile, ligand.score, CSIFP))
+        if args.diagram:
+            logger.debug('Generating 2D interaction diagram for the ligand ' + ligand.inputName)
+            generate_interaction_diagram(ligand, fingerprint)
 
 
 if __name__ == '__main__':
