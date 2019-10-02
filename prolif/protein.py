@@ -19,7 +19,7 @@ from rdkit import Geometry as rdGeometry
 import os.path
 from .residue import Residue
 from .utils import mol2_reader
-from .prolif import logger
+from .logger import logger
 
 class Protein:
     """Class for a protein"""

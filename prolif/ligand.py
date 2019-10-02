@@ -19,7 +19,7 @@ from rdkit import Chem, DataStructs
 from rdkit.Chem import rdMolTransforms, rdmolops
 from rdkit import Geometry as rdGeometry
 from numpy import argmax
-from .prolif import logger
+from .logger import logger
 
 class Ligand:
     """Class for a ligand"""
@@ -35,7 +35,7 @@ class Ligand:
         # Set Centroid
         self.coordinates = self.mol.GetConformer().GetPositions()
         self.centroid = rdMolTransforms.ComputeCentroid(self.mol.GetConformer())
-        logger.debug('Set ligand centroid to {:.3f} {:.3f} {:.3f}'.format(*[c for c in self.centroid]))
+        logger.debug('Ligand centroid was detected as x={:.3f} y={:.3f} z={:.3f}'.format(*[c for c in self.centroid]))
 
 
     def __repr__(self):

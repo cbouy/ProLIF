@@ -19,7 +19,7 @@ from os import path
 from rdkit import Chem, DataStructs
 from rdkit import Geometry as rdGeometry
 from math import degrees
-from .prolif import logger
+from .logger import logger
 from .utils import (get_resnumber,
                     getCentroid,
                     isinAngleLimits,
