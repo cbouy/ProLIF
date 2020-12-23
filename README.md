@@ -1,13 +1,10 @@
-[![PyPI - Version](https://badge.fury.io/py/prolif.svg)](https://pypi.org/project/prolif/)
+## :warning: This repository is no longer maintained ! The development has moved to [@chemosim-lab/ProLIF](https://github.com/chemosim-lab/ProLIF)
+
+
 [![PyPI - License](https://img.shields.io/pypi/l/prolif.svg)](https://pypi.org/project/prolif/)
-[![PyPI - Status](https://img.shields.io/pypi/status/prolif.svg)](https://pypi.org/project/prolif/)
-[![Build Status](https://travis-ci.org/cbouy/ProLIF.svg?branch=master)](https://travis-ci.org/cbouy/ProLIF)
-[![Say Thanks!](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/cbouy)
 
 # ProLIF
 Protein-Ligand Interaction Fingerprints
-
-:warning: This project is currently under active development, and might be subject to drastic changes. :warning:
 
 ## Description
 
